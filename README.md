@@ -1,6 +1,6 @@
 # vue-music
 
-> vue音乐播放器
+> vue音乐播放器,使用qq音乐接口
 
 ## Build Setup
 

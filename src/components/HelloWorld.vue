@@ -84,6 +84,7 @@
 </template>
 
 <script>
+import rank from '../api/rank.js'
 export default {
   name: 'HelloWorld',
   data () {
