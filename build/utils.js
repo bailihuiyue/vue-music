@@ -54,15 +54,27 @@ exports.cssLoaders = function (options) {
     }
   }
 
+  //Vue中使用CSS预处理器 stylus以及配置全局css变量的方法
+  //https://www.imooc.com/article/43664
+  // const stylusOptions = {
+  //   import: [
+  //     path.join(__dirname, "../src/common/stylus/index.styl")
+  //   ],
+  //   paths: [
+  //     path.join(__dirname, '../src/assets'),
+  //     path.join(__dirname, '../')
+  //   ]
+  // }
+
   // https://vue-loader.vuejs.org/en/configurations/extract-css.html
   return {
     css: generateLoaders(),
     postcss: generateLoaders(),
     less: generateLoaders('less'),
     sass: generateLoaders('sass', { indentedSyntax: true }),
-    scss: generateLoaders('sass'),
-    stylus: generateLoaders('stylus'),
-    styl: generateLoaders('stylus')
+    scss: generateLoaders('sass'),   
+    stylus: generateLoaders('stylus' /*,stylusOptions*/),
+    styl: generateLoaders('stylus' /*,stylusOptions*/)
   }
 }
 
