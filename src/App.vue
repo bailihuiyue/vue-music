@@ -1,22 +1,21 @@
 <template>
   <div id="app">
-    <m-header></m-header>
     <router-view></router-view>
   </div>
 </template>
 
 <script>
-import MHeader from "./components/header/m-header.vue";
+import MHeader from './components/header/m-header.vue'
 export default {
-  name: "App",
+  name: 'App',
   components: {
     MHeader
   },
   data() {
-    return {};
+    return {}
   },
   mounted() {}
-};
+}
 </script>
 
 <style>
