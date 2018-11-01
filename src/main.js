@@ -8,10 +8,6 @@ import VueLazyload from 'vue-lazyload'
 
 import 'common/stylus/index.styl'
 
-import Vant from 'vant'
-import 'vant/lib/vant-css/index.css'
-
-Vue.use(Vant)
 Vue.config.productionTip = false
 
 fastclick.attach(document.body)

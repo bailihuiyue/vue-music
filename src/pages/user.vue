@@ -19,24 +19,24 @@
 </template>
 
 <script>
-// import {
-//   Tab,
-//   Tabs,
-//   Row,
-//   Col
-// } from 'vant'
+import {
+  Tab,
+  Tabs,
+  Row,
+  Col
+} from 'vant'
 
 export default {
   data() {
     return {}
   },
 
-  // components: {
-  //   [Tab.name]: Tab,
-  //   [Tabs.name]: Tabs,
-  //   [Row.name]: Row,
-  //   [Col.name]: Col
-  // },
+  components: {
+    [Tab.name]: Tab,
+    [Tabs.name]: Tabs,
+    [Row.name]: Row,
+    [Col.name]: Col
+  },
 
   computed: {},
 
