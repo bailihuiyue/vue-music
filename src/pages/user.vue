@@ -9,20 +9,18 @@
           </div>
         </van-col>
         <van-col span="16">
-          <x-tab>
+          <x-tab :line-width="0" bar-active-color="#333" :animate="false" v-model="index">
             <x-tab-item selected>我喜欢的</x-tab-item>
             <x-tab-item>最近听的</x-tab-item>
           </x-tab>
-          <van-tabs type="card">
-            <van-tab title="我喜欢的" style="padding-left:100px;">
-              <play-all></play-all>
-            </van-tab>
-            <van-tab title="最近听的">
-              <play-all></play-all>
-            </van-tab>
-          </van-tabs>
         </van-col>
       </van-row>
+      <play-all></play-all>
+      <swiper v-model="index" height="100px" :show-dots="false">
+        <swiper-item>
+          <div class="tab-swiper vux-center">Container</div>
+        </swiper-item>
+      </swiper>
     </div>
   </transition>
 </template>
@@ -33,7 +31,9 @@ import { Tab as XTab, TabItem as XTabItem } from 'vux' // TODO:tip: 关键字as,
 import playAll from '../components/play-all/play-all'
 export default {
   data() {
-    return {}
+    return {
+      index: 0
+    }
   },
 
   components: {
@@ -73,18 +73,27 @@ export default {
     transform translateX(100%)
   /deep/ .van-row
     margin-top 10px
+    .back
+      margin-top 3px
     .icon-back
       display block
       margin-left 10px
       font-size $font-size-large-x
       color $color-theme
-    .van-tabs__nav--card
-      border-color $color-highlight-background
-    .van-tab
-      background-color $color-background
-      border-right 1px solid $color-highlight-background
-      color $color-text-d
-      &.van-tab--active
-        background-color $color-highlight-background
-        color $color-text
+    .vux-tab-container
+      height 30px
+      .vux-tab
+        height 30px
+      .vux-tab-item
+        border-color $color-highlight-background !important
+        background-color $color-background
+        border-right 1px solid $color-highlight-background
+        color $color-text-d
+        border none !important
+        background-size 0
+        line-height 30px
+        &.vux-tab-selected
+          background-color $color-highlight-background
+          color $color-text
+          border none
 </style>
