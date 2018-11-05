@@ -5,6 +5,8 @@ import App from './App'
 import router from './router'
 import fastclick from 'fastclick'
 import VueLazyload from 'vue-lazyload'
+import { LoadingPlugin } from 'vux'
+import { Toast } from 'vant'
 
 import 'common/stylus/index.styl'
 
@@ -12,6 +14,8 @@ Vue.config.productionTip = false
 
 fastclick.attach(document.body)
 
+Vue.use(LoadingPlugin)
+Vue.use(Toast)
 Vue.use(VueLazyload, {
   loading: require('common/image/default.png')
 })

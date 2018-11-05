@@ -9,18 +9,19 @@
           </div>
         </van-col>
         <van-col span="16">
-          <x-tab :line-width="0" bar-active-color="#333" :animate="false" v-model="index">
-            <x-tab-item selected>我喜欢的</x-tab-item>
-            <x-tab-item>最近听的</x-tab-item>
+          <x-tab :line-width="0" bar-active-color="#333" :animate="false">
+            <x-tab-item selected @click.native="handleClick(0)">我喜欢的</x-tab-item>
+            <x-tab-item @click.native="handleClick(1)">最近听的</x-tab-item>
           </x-tab>
         </van-col>
       </van-row>
       <play-all></play-all>
-      <swiper v-model="index" height="100px" :show-dots="false">
-        <swiper-item>
-          <div class="tab-swiper vux-center">Container</div>
-        </swiper-item>
-      </swiper>
+      <div class="music-list">
+          <div v-if="historyMsc.length>0">
+            <div class="tab-swiper vux-center" v-for="(h,i) in historyMsc" :key="i">{{h}}</div>
+          </div>
+          <div v-else>暂无</div>
+      </div>
     </div>
   </transition>
 </template>
@@ -32,7 +33,8 @@ import playAll from '../components/play-all/play-all'
 export default {
   data() {
     return {
-      index: 0
+      index: 0,
+      historyMsc: []
     }
   },
 
@@ -53,6 +55,15 @@ export default {
   methods: {
     back() {
       this.$router.back()
+    },
+    handleClick(item) {
+      // 我喜欢的
+      if (item === 0) {
+        this.historyMsc.push('我喜欢的')
+      } else {
+        // 最近听的
+        this.historyMsc.push('最近听的')
+      }
     }
   }
 }
