@@ -13,7 +13,7 @@
 </template>
 <script>
 import { Swipe, SwipeItem } from 'vant'
-import * as api from '../../api/recommend.js'
+import {getRecommend} from '../../api/recommend.js'
 export default {
   data() {
     return {
@@ -29,10 +29,9 @@ export default {
 
   computed: {},
   created() {
-    api.getRecommend().then(res => {
+    getRecommend().then(res => {
       if (res.code === 0) {
         this.slider = res.data.slider
-        console.log(res.data.slider)
       } else {
         this.$toast('getRecommend调用失败')
       }

@@ -2,12 +2,13 @@
 <template>
   <div>
     <swipe></swipe>
+    <disc-list></disc-list>
   </div>
 </template>
 
 <script>
 import swipe from '../components/swipe/swipe.vue'
-
+import discList from '../components/discList/discList.vue'
 export default {
   data () {
     return {
@@ -15,7 +16,8 @@ export default {
   },
 
   components: {
-    swipe
+    swipe,
+    discList
   },
 
   methods: {},

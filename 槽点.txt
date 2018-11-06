@@ -5,3 +5,14 @@ vant很垃圾
 一个项目中可以引入多个组件库
 vux中如果引入了不存在的组件比如tab写成xtab,则会报vux/undefined这种匪夷所思的错误
 vant swipe轮播配合v-lazy之后指示条无法根据图片大小自动定位    
+
+
+
+
+技能使用
+    vue全家桶
+    代理
+    eslint配置
+    vue-lazy-load
+
+UI地址:http://ustbhuangyi.com/music/#/recommend    

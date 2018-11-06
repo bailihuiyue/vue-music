@@ -20,6 +20,11 @@ export default new Router({
       component: User
     },
     {
+      path: '/recommend/:id',
+      name: 'index',
+      component: Recommend
+    },
+    {
       path: '*',
       redirect: '/'
     }
