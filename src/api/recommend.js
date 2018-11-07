@@ -1,5 +1,5 @@
 import jsonp from 'common/js/jsonp'
-import {commonParams, options} from './config'
+import { commonParams, options, key } from './config'
 import axios from 'axios'
 
 export function getRecommend() {
@@ -15,6 +15,16 @@ export function getRecommend() {
 }
 
 export function getDiscList() {
+  // TODO:todo:qq音乐热歌列表还没开放
+  // const url = 'https://api.bzqll.com/music/netease/hotSongList'
+
+  // const data = { key }
+
+  // return axios.get(url, {
+  //   params: data
+  // }).then((res) => {
+  //   return Promise.resolve(res.data)
+  // })
   const url = '/api/getDiscList'
 
   const data = Object.assign({}, commonParams, {
@@ -36,13 +46,10 @@ export function getDiscList() {
   })
 }
 
-export function getSongList(disstid) {
+export function getSongList(id) {
   const url = 'https://api.bzqll.com/music/tencent/songList'
 
-  const data = Object.assign({}, commonParams, {
-    id: disstid,
-    key: '579621905'
-  })
+  const data = { key, id }
 
   return axios.get(url, {
     params: data

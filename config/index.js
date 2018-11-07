@@ -29,8 +29,8 @@ module.exports = {
          '^/api/getDiscList': '',
         },
         headers:{
-         referer: '',
-         host: ''
+         referer: 'https://c.y.qq.com/',
+         host: 'c.y.qq.com'
         }
        },
        '/api/getSongList': {

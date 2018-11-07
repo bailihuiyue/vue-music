@@ -45,7 +45,7 @@ export default {
     getDiscList().then(res => {
       this.list = res.data.list
     }).catch((err) => {
-      console.log(err)
+      console.log('getDiscList:', err)
     })
   },
   mounted() {}

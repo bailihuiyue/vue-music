@@ -41,7 +41,7 @@ export default {
     getSongList(discid).then(res => {
       this.data = res.data
     }).catch((err) => {
-      console.log(err)
+      console.log('getSongList:', err)
     })
   },
   mounted() {}
