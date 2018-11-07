@@ -44,6 +44,8 @@ export default {
   created() {
     getDiscList().then(res => {
       this.list = res.data.list
+    }).catch((err) => {
+      console.log(err)
     })
   },
   mounted() {}

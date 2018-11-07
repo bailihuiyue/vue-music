@@ -29,8 +29,19 @@ module.exports = {
          '^/api/getDiscList': '',
         },
         headers:{
-         referer: 'https://c.y.qq.com/',
-         host: 'c.y.qq.com'
+         referer: '',
+         host: ''
+        }
+       },
+       '/api/getSongList': {
+        target: 'https://api.bzqll.com/music/tencent/songList',
+        changeOrigin: true,
+        pathRewrite: {
+         '^/api/getSongList': '',
+        },
+        headers:{
+         referer: 'https://api.bzqll.com/music/',
+         host: 'api.bzqll.com'
         }
        },
      },

@@ -11,8 +11,15 @@ vant swipe轮播配合v-lazy之后指示条无法根据图片大小自动定位
 
 技能使用
     vue全家桶
+    懒加载
     代理
     eslint配置
     vue-lazy-load
 
 UI地址:http://ustbhuangyi.com/music/#/recommend    
+接口地址:https://www.bzqll.com/2018/10/39.html#tencent
+
+
+问题:
+    vue声明周期
+    conputed,watch区别

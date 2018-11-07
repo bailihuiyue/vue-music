@@ -29,10 +29,11 @@ export default {}
 @import '~common/stylus/mixin'
 .m-header
   position relative
-  height 44px
+  height 55px
   text-align center
   color $color-theme
   font-size 0
+  top 5px
   .icon
     display inline-block
     vertical-align top

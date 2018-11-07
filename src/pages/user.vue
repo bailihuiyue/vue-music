@@ -4,9 +4,7 @@
     <div class="user">
       <van-row>
         <van-col span="4">
-          <div class="back" @click="back">
-            <i class="icon-back"></i>
-          </div>
+          <back></back>
         </van-col>
         <van-col span="16">
           <x-tab :line-width="0" bar-active-color="#333" :animate="false">
@@ -30,6 +28,7 @@
 import { Tab, Tabs, Row, Col } from 'vant'
 import { Tab as XTab, TabItem as XTabItem } from 'vux' // TODO:tip: 关键字as,使用as给组件取别名
 import playAll from '../components/play-all/play-all'
+import back from '../components/back/back.vue'
 export default {
   data() {
     return {
@@ -45,7 +44,8 @@ export default {
     [Col.name]: Col,
     playAll,
     XTab,
-    XTabItem
+    XTabItem,
+    back
   },
 
   computed: {},
@@ -53,9 +53,6 @@ export default {
   mounted() {},
 
   methods: {
-    back() {
-      this.$router.back()
-    },
     handleClick(item) {
       // 我喜欢的
       if (item === 0) {
@@ -84,13 +81,6 @@ export default {
     transform translateX(100%)
   /deep/ .van-row
     margin-top 10px
-    .back
-      margin-top 3px
-    .icon-back
-      display block
-      margin-left 10px
-      font-size $font-size-large-x
-      color $color-theme
     .vux-tab-container
       height 30px
       .vux-tab
