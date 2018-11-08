@@ -10,41 +10,7 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {
-      '/api/lyric': {
-       target: 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg',
-       changeOrigin: true,
-       pathRewrite: {
-        '^/api/lyric': '',
-       },
-       headers:{
-        referer: 'https://c.y.qq.com/',
-        host: 'c.y.qq.com'
-       }
-      },
-      '/api/getDiscList': {
-        target: 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg',
-        changeOrigin: true,
-        pathRewrite: {
-         '^/api/getDiscList': '',
-        },
-        headers:{
-         referer: 'https://c.y.qq.com/',
-         host: 'c.y.qq.com'
-        }
-       },
-       '/api/getSongList': {
-        target: 'https://api.bzqll.com/music/tencent/songList',
-        changeOrigin: true,
-        pathRewrite: {
-         '^/api/getSongList': '',
-        },
-        headers:{
-         referer: 'https://api.bzqll.com/music/',
-         host: 'api.bzqll.com'
-        }
-       },
-     },
+    proxyTable: {},
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST

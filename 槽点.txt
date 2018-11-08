@@ -19,6 +19,15 @@ vant swipe轮播配合v-lazy之后指示条无法根据图片大小自动定位
 UI地址:http://ustbhuangyi.com/music/#/recommend    
 接口地址:https://www.bzqll.com/2018/10/39.html#tencent
 
+get√
+    1.<!-- TODO:tip:大佬说这是一个很经典的自动撑开背景的写法,
+            原理是让一个图片和div中的背景图片大小一样,
+            img撑开了外层div,内层div也会跟外层大小 -->
+            <div class="bg-img">
+                <div class="mask"></div>
+                <img :src="data.logo">
+            </div>
+    2.padding的百分比是基于父元素的宽度计算的
 
 问题:
     vue声明周期

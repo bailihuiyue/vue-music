@@ -5,11 +5,11 @@
             热门歌单推荐
         </div>
         <div class="song-list-wrap" v-if="list.length>0">
-            <router-link v-for="(l,i) in list" :key="i" :to="'/recommend/'+l.dissid" class="song-list-item">
-                <img v-lazy="l.imgurl" class="avatar">
+            <router-link v-for="(l,i) in list" :key="i" :to="'/recommend/'+l.id" class="song-list-item">
+                <img v-lazy="l.pic" class="avatar">
                 <div class="info-wrap">
-                    <div class="title">{{l.creator.name}}</div>
-                    <div class="text">{{l.dissname}}</div>
+                    <div class="title">{{l.creator}}</div>
+                    <div class="text">{{l.name}}</div>
                 </div>
             </router-link>
         </div>
@@ -43,7 +43,7 @@ export default {
   computed: {},
   created() {
     getDiscList().then(res => {
-      this.list = res.data.list
+      this.list = res.data
     }).catch((err) => {
       console.log('getDiscList:', err)
     })

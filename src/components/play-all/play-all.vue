@@ -1,6 +1,6 @@
 <!-- 用户中心全部播放按钮 -->
 <template>
-  <div class="play-all">
+  <div class="play-all" :class="gold?'gold':''">
     <i class="icon-play"></i>
     <span class="text">随机播放全部</span>
   </div>
@@ -11,7 +11,12 @@ export default {
   data() {
     return {}
   },
-
+  props: {
+    gold: {
+      type: Boolean,
+      default: false
+    }
+  },
   components: {},
 
   methods: {},
@@ -41,4 +46,7 @@ export default {
     vertical-align middle
     font-size $font-size-medium
     display inline-block
+.gold
+  border 1px solid $color-theme
+  color $color-theme
 </style>
