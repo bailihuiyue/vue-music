@@ -63,20 +63,31 @@ export default {
   computed: {},
   created() {
     let discid = this.$route.params.id
+
     getSongList(discid)
       .then(res => {
         this.data = res.data
         this.songs = res.data.songs
         // console.log(this.data)
         this.bg = { background: `url(${res.data.logo})` }
-      })
-      .catch(err => {
+      }).catch((err) => {
         console.log('getSongList:', err)
       })
+
+    // getSongList(discid)
+    //   .then(res => {
+    //     this.data = res.data
+    //     this.songs = res.data.songs
+    //     // console.log(this.data)
+    //     this.bg = { background: `url(${res.data.logo})` }
+    //   })
+    //   .catch(err => {
+    //     console.log('getSongList:', err)
+    //   })
   },
   mounted() {
     /* eslint-disable no-new */
-    new BScroll('.song-list-wrap')
+    // new BScroll('.song-list-wrap')
   }
 }
 </script>
