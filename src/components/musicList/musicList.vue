@@ -53,7 +53,7 @@ export default {
         .title
             color $color-text
             font-size $font-size-small
-            margin-bottom 10px
+            margin-bottom 5px
         .text
             color $color-text-l
             font-size $font-size-small-s

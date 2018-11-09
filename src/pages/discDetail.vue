@@ -13,14 +13,14 @@
             <!-- TODO:tip:大佬说这是一个很经典的自动撑开背景的写法,
             原理是让一个图片和div中的背景图片大小一样,
             img撑开了外层div,内层div也会跟外层大小 -->
-            <div class="bg-img">
+            <div class="bg-img" ref="bgImg">
                 <div class="mask"></div>
                 <img :src="data.logo">
                 <div class="play-all-wrap">
                     <play-all :gold="true"></play-all>
                 </div>
             </div>
-            <div class="song-list-wrap" v-if="songs.length>0" >
+            <div class="song-list-wrap" v-show="songs.length>0" ref="BScroll">
                 <div class="song-list">
                     <router-link v-for="(l,i) in songs" :key="i" :to="'/recommend/'+l.id" class="song-list-item">
                         <music-list :singer="l.singer" :name="l.name"></music-list>
@@ -38,12 +38,15 @@ import { Tab, Tabs, Row, Col } from 'vant'
 import playAll from '../components/play-all/play-all.vue'
 import musicList from '../components/musicList/musicList'
 import BScroll from 'better-scroll'
+import {prefixStyle} from '../common/js/utils.js'
+const transform = prefixStyle('transform')
 export default {
   data() {
     return {
       data: Object,
       bg: '',
-      songs: []
+      songs: [],
+      scroll: Object
     }
   },
 
@@ -58,36 +61,41 @@ export default {
     BScroll
   },
 
-  methods: {},
+  methods: {
+    onScroll: function(pos) {
+      if (pos.y > 0) {
+        // this.$refs.bgImg.style.height = this.$refs.bgImg.offsetHeight + pos.y + 'px'
+        let scale = (pos.y / this.$refs.bgImg.offsetHeight).toFixed(2) * 2 + 1
+        this.$refs.bgImg.style[transform] = `scale(${scale})`
+        // console.log(this.$refs.bgImg.offsetHeight + pos.y)
+      }
+    }
+  },
 
   computed: {},
   created() {
     let discid = this.$route.params.id
-
     getSongList(discid)
       .then(res => {
         this.data = res.data
         this.songs = res.data.songs
-        // console.log(this.data)
         this.bg = { background: `url(${res.data.logo})` }
       }).catch((err) => {
         console.log('getSongList:', err)
       })
-
-    // getSongList(discid)
-    //   .then(res => {
-    //     this.data = res.data
-    //     this.songs = res.data.songs
-    //     // console.log(this.data)
-    //     this.bg = { background: `url(${res.data.logo})` }
-    //   })
-    //   .catch(err => {
-    //     console.log('getSongList:', err)
-    //   })
   },
   mounted() {
-    /* eslint-disable no-new */
-    // new BScroll('.song-list-wrap')
+    let self = this
+    this.$nextTick(() => {
+      setTimeout(() => {
+        /* eslint-disable no-new */
+        self.scroll = new BScroll(this.$refs.BScroll, {
+          probeType: 2
+        })
+        self.scroll.on('scroll', this.onScroll)
+        console.log(this.scroll)
+      }, 10)
+    })
   }
 }
 </script>
@@ -99,28 +107,25 @@ export default {
     right 0
     bottom 0
     left 0
-    padding-top 10px
     background-color $color-background
     &.left-slide-enter-active, &.left-slide-leave-active
         transition all 0.3s
     &.left-slide-enter, &.left-slide-leave-to
         transform translateX(100%)
     /deep/ .van-row
+        margin-top 10px
         position absolute
-        z-index 1
         width 100%
+        z-index: 1
         .disc-title
             width 100%
             text-align center
             height 30px
             line-height 30px
     .bg-img
-        position absolute
-        top 0
-        width 100%
-        z-index 0
         height 40%
         overflow hidden
+        position: relative;
         .mask
             position absolute
             width 100%
@@ -140,13 +145,12 @@ export default {
             padding 20px
             font-size $font-size-small
     .song-list-wrap
-        height 60%
         position absolute
-        bottom 0
         width 100%
-        padding-top 40px
+        bottom 20px
+        height 60%
         .song-list
             width 90%
             margin 0 auto
-            margin-top 30px
+            padding-top 30px
 </style>
