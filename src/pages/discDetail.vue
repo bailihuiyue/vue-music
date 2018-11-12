@@ -20,6 +20,7 @@
                     <play-all :gold="true"></play-all>
                 </div>
             </div>
+            <div class="bg-layer" ref="layer"></div>
             <div class="song-list-wrap" v-show="songs.length>0" ref="BScroll">
                 <div class="song-list">
                     <router-link v-for="(l,i) in songs" :key="i" :to="'/recommend/'+l.id" class="song-list-item">
@@ -38,15 +39,18 @@ import { Tab, Tabs, Row, Col } from 'vant'
 import playAll from '../components/play-all/play-all.vue'
 import musicList from '../components/musicList/musicList'
 import BScroll from 'better-scroll'
-import {prefixStyle} from '../common/js/utils.js'
+import { prefixStyle } from '../common/js/utils.js'
 const transform = prefixStyle('transform')
+const RESERVED_HEIGHT = 40
+
 export default {
   data() {
     return {
       data: Object,
       bg: '',
       songs: [],
-      scroll: Object
+      scroll: Object,
+      scrollY: 0
     }
   },
 
@@ -63,12 +67,7 @@ export default {
 
   methods: {
     onScroll: function(pos) {
-      if (pos.y > 0) {
-        // this.$refs.bgImg.style.height = this.$refs.bgImg.offsetHeight + pos.y + 'px'
-        let scale = (pos.y / this.$refs.bgImg.offsetHeight).toFixed(2) * 2 + 1
-        this.$refs.bgImg.style[transform] = `scale(${scale})`
-        // console.log(this.$refs.bgImg.offsetHeight + pos.y)
-      }
+      this.scrollY = pos.y
     }
   },
 
@@ -80,22 +79,35 @@ export default {
         this.data = res.data
         this.songs = res.data.songs
         this.bg = { background: `url(${res.data.logo})` }
-      }).catch((err) => {
+      })
+      .catch(err => {
         console.log('getSongList:', err)
       })
   },
   mounted() {
+    this.imageHeight = this.$refs.bgImg.clientHeight
+    this.minTransalteY = -this.imageHeight + RESERVED_HEIGHT
     let self = this
     this.$nextTick(() => {
       setTimeout(() => {
         /* eslint-disable no-new */
         self.scroll = new BScroll(this.$refs.BScroll, {
-          probeType: 2
+          probeType: 3
         })
         self.scroll.on('scroll', this.onScroll)
-        console.log(this.scroll)
       }, 10)
     })
+  },
+  watch: {
+    scrollY(newVal) {
+      if (this.scrollY > 0) {
+        let scale = (this.scrollY / this.$refs.bgImg.offsetHeight).toFixed(2) * 1 + 1
+        this.$refs.bgImg.style[transform] = `scale(${scale})`
+      }
+      if (this.$refs.layer.style.top > 40) {
+        this.$refs.layer.style.top = `${this.scrollY}px`
+      }
+    }
   }
 }
 </script>
@@ -116,16 +128,23 @@ export default {
         margin-top 10px
         position absolute
         width 100%
-        z-index: 1
+        z-index 1
         .disc-title
             width 100%
             text-align center
             height 30px
             line-height 30px
+    .bg-layer
+        position absolute
+        top 40%
+        height 100%
+        background $color-background
+        width 100%
     .bg-img
         height 40%
         overflow hidden
-        position: relative;
+        position relative
+        transform-origin top
         .mask
             position absolute
             width 100%

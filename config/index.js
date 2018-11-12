@@ -10,7 +10,20 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable: {
+      //TODO:learn vue开发环境加代理方法
+      // '/api/lyric': {
+      //   target: 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg',
+      //   changeOrigin: true,
+      //   pathRewrite: {
+      //     '^/api/lyric': '',
+      //   },
+      //   headers: {
+      //     referer: 'https://c.y.qq.com/',
+      //     host: 'c.y.qq.com'
+      //   }
+      // }
+    },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST
