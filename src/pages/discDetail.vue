@@ -16,7 +16,7 @@
             <div class="bg-img" ref="bgImg">
                 <div class="mask"></div>
                 <img :src="data.logo">
-                <div class="play-all-wrap">
+                <div class="play-all-wrap" ref="playAll">
                     <play-all :gold="true"></play-all>
                 </div>
             </div>
@@ -42,7 +42,6 @@ import BScroll from 'better-scroll'
 import { prefixStyle } from '../common/js/utils.js'
 const transform = prefixStyle('transform')
 const RESERVED_HEIGHT = 40
-
 export default {
   data() {
     return {
@@ -86,13 +85,18 @@ export default {
   },
   mounted() {
     this.imageHeight = this.$refs.bgImg.clientHeight
-    this.minTransalteY = -this.imageHeight + RESERVED_HEIGHT
+    this.minTransalteY = -(this.imageHeight - RESERVED_HEIGHT)
+    // this.$refs.BScroll.style.top = `${this.imageHeight}px`
     let self = this
     this.$nextTick(() => {
       setTimeout(() => {
         /* eslint-disable no-new */
         self.scroll = new BScroll(this.$refs.BScroll, {
-          probeType: 3
+          probeType: 3,
+          bounce: {
+            top: true,
+            bottom: true
+          }
         })
         self.scroll.on('scroll', this.onScroll)
       }, 10)
@@ -100,12 +104,31 @@ export default {
   },
   watch: {
     scrollY(newVal) {
+      // 向下滚动时scrollY>0,
       if (this.scrollY > 0) {
+        // 计算出一个背景图片的放大率,算法:用滚动的大小除以图片整个的高度表示
         let scale = (this.scrollY / this.$refs.bgImg.offsetHeight).toFixed(2) * 1 + 1
         this.$refs.bgImg.style[transform] = `scale(${scale})`
       }
-      if (this.$refs.layer.style.top > 40) {
-        this.$refs.layer.style.top = `${this.scrollY}px`
+      // TODO:learn:如果使用下面这种值判断的方法会导致判断不准确,比如要 a>5这种条件,希望a=6时立即生效,
+      // 但是实际过程中有可能会达到a=7甚至a=17,导致结果不准确,出bug
+      // 但是使用Math.max()这种方法就很准确
+      // if (newVal > this.minTransalteY) {
+
+      // }
+
+      // 控制遮罩层平移的最大高度
+      let translateY = Math.max(this.minTransalteY, newVal)
+      this.$refs.layer.style[transform] = `translateY(${translateY}px)`
+      // 当遮罩不在运动时,让背景图盖住多出的scroll内容
+      if (translateY === this.minTransalteY) {
+        this.$refs.bgImg.style.zIndex = 2
+        this.$refs.bgImg.style.height = RESERVED_HEIGHT + 'px'
+        this.$refs.playAll.style.display = 'none'
+      } else {
+        this.$refs.bgImg.style.zIndex = 0
+        this.$refs.bgImg.style.height = '40%'
+        this.$refs.playAll.style.display = ''
       }
     }
   }
@@ -119,6 +142,7 @@ export default {
     right 0
     bottom 0
     left 0
+    overflow hidden
     background-color $color-background
     &.left-slide-enter-active, &.left-slide-leave-active
         transition all 0.3s
@@ -128,12 +152,12 @@ export default {
         margin-top 10px
         position absolute
         width 100%
-        z-index 1
-        .disc-title
-            width 100%
-            text-align center
-            height 30px
-            line-height 30px
+        z-index 3
+    .disc-title
+        width 100%
+        text-align center
+        height 30px
+        line-height 30px
     .bg-layer
         position absolute
         top 40%
@@ -153,7 +177,6 @@ export default {
         img
             width 100%
             object-fit cover
-            height 100%
         .play-all-wrap
             position absolute
             bottom 5%
@@ -164,12 +187,15 @@ export default {
             padding 20px
             font-size $font-size-small
     .song-list-wrap
+        z-index 1
+        // background-color $color-background
         position absolute
         width 100%
-        bottom 20px
-        height 60%
+        height 100%
+        // overflow hidden
         .song-list
             width 90%
             margin 0 auto
-            padding-top 30px
+            padding-top 20px
+            padding-bottom 50px
 </style>

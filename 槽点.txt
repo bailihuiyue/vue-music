@@ -28,6 +28,7 @@ get√
                 <img :src="data.logo">
             </div>
     2.padding的百分比是基于父元素的宽度计算的
+    3.滑动功能如果跟踪offsetTop然后进行值的比较会有延迟导致每次滑动的停止点不一致
 
 问题:
     vue声明周期
