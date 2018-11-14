@@ -120,7 +120,7 @@ export default {
       // 控制遮罩层平移的最大高度
       let translateY = Math.max(this.minTransalteY, newVal)
       this.$refs.layer.style[transform] = `translateY(${translateY}px)`
-      // 当遮罩不在运动时,让背景图盖住多出的scroll内容
+      // 当遮罩不再运动时,让背景图盖住多出的scroll内容,并且隐藏playAll按钮,将背景图大小调整为40高度
       if (translateY === this.minTransalteY) {
         this.$refs.bgImg.style.zIndex = 2
         this.$refs.bgImg.style.height = RESERVED_HEIGHT + 'px'
@@ -188,14 +188,12 @@ export default {
             font-size $font-size-small
     .song-list-wrap
         z-index 1
-        // background-color $color-background
         position absolute
         width 100%
-        height 100%
-        // overflow hidden
+        height 60%
+        bottom 0
         .song-list
             width 90%
             margin 0 auto
-            padding-top 20px
-            padding-bottom 50px
+            padding 20px 0
 </style>
