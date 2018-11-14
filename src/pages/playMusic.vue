@@ -1,19 +1,33 @@
 <!-- 音乐播放页面 -->
 <template>
-    <transition name="left-slide" mode="in-out">
-        <div class="play-music">
+    <div class="play-music">
+        <transition name="" mode="in-out">
+            <music-title title="qwewe" rotate="-90"></music-title>
+        </transition>
+        <transition name="">
+            <div class="body">
 
-        </div>
-    </transition>
+            </div>
+        </transition>
+        <transition name="">
+            <div class="footer">
+
+            </div>
+        </transition>
+    </div>
 </template>
 
 <script>
+import musicTitle from '../components/musicTitle/musicTitle'
+
 export default {
   data() {
     return {}
   },
 
-  components: {},
+  components: {
+    musicTitle
+  },
 
   methods: {},
 
@@ -28,7 +42,12 @@ export default {
 .play-music
     full-page()
     &.left-slide-enter-active, &.left-slide-leave-active
-        transition all 0.3s
+        transition: all 0.3s
     &.left-slide-enter, &.left-slide-leave-to
-        transform translateX(100%)
+        transform: translateX(100%)
+    .back
+        position absolute
+        top 10px
+        left 10px
+        transform rotate(-90deg)
 </style>

@@ -26,10 +26,11 @@ export default {
 <style scoped lang="stylus" rel="stylesheet/stylus">
 @import '~common/stylus/variable'
 .back
-  margin-top 3px
+  text-align center
   .icon-back
+    height: 30px;
+    line-height: 30px;
     display block
-    margin-left 10px
     font-size $font-size-large-x
     color $color-theme
 </style>

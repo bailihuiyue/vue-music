@@ -2,14 +2,7 @@
 <template>
     <transition name="left-slide">
         <div class="disc-detail">
-            <van-row>
-                <van-col span="4">
-                    <back></back>
-                </van-col>
-                <van-col span="16">
-                    <div class="disc-title">{{data.title}}</div>
-                </van-col>
-            </van-row>
+            <music-title :title="data.title"></music-title>
             <!-- TODO:tip:大佬说这是一个很经典的自动撑开背景的写法,
             原理是让一个图片和div中的背景图片大小一样,
             img撑开了外层div,内层div也会跟外层大小 -->
@@ -34,8 +27,7 @@
 
 <script>
 import { getSongList } from '../api/recommend.js'
-import back from '../components/back/back.vue'
-import { Tab, Tabs, Row, Col } from 'vant'
+import musicTitle from '../components/musicTitle/musicTitle'
 import playAll from '../components/play-all/play-all.vue'
 import musicList from '../components/musicList/musicList'
 import BScroll from 'better-scroll'
@@ -54,11 +46,7 @@ export default {
   },
 
   components: {
-    back,
-    [Tab.name]: Tab,
-    [Tabs.name]: Tabs,
-    [Row.name]: Row,
-    [Col.name]: Col,
+    musicTitle,
     playAll,
     musicList,
     BScroll
@@ -143,16 +131,6 @@ export default {
         transition all 0.3s
     &.left-slide-enter, &.left-slide-leave-to
         transform translateX(100%)
-    /deep/ .van-row
-        margin-top 10px
-        position absolute
-        width 100%
-        z-index 3
-    .disc-title
-        width 100%
-        text-align center
-        height 30px
-        line-height 30px
     .bg-layer
         position absolute
         top 40%

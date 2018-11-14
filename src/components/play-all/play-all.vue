@@ -32,7 +32,7 @@ export default {
   border 1px solid $color-text-l
   color $color-text-l
   border-radius 50px
-  width 30%
+  width 120px
   padding 7px
   margin 20px auto
   font-size 0
