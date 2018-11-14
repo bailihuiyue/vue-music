@@ -5,6 +5,7 @@ import Router from 'vue-router'
 import User from '../pages/user.vue'
 import Recommend from '../pages/recommend.vue'
 import DiscDetail from '../pages/discDetail.vue'
+import PlayMusic from '../pages/playMusic.vue'
 Vue.use(Router)
 
 export default new Router({
@@ -21,9 +22,14 @@ export default new Router({
       component: User
     },
     {
-      path: '/recommend/:id',
-      name: 'index',
+      path: '/discDetail/:id',
+      name: 'discDetail',
       component: DiscDetail
+    },
+    {
+      path: '/playMusic/:id',
+      name: 'playMusic',
+      component: PlayMusic
     },
     {
       path: '*',

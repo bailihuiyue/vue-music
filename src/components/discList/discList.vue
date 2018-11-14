@@ -5,7 +5,7 @@
             热门歌单推荐
         </div>
         <div class="song-list-wrap" v-if="list.length>0">
-            <router-link v-for="(l,i) in list" :key="i" :to="'/recommend/'+l.id" class="song-list-item">
+            <router-link v-for="(l,i) in list" :key="i" :to="'/discDetail/'+l.id" class="song-list-item">
                 <img v-lazy="l.pic" class="avatar">
                 <div class="info-wrap">
                     <div class="title">{{l.creator}}</div>

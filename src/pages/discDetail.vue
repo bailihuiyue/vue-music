@@ -23,7 +23,7 @@
             <div class="bg-layer" ref="layer"></div>
             <div class="song-list-wrap" v-show="songs.length>0" ref="BScroll">
                 <div class="song-list">
-                    <router-link v-for="(l,i) in songs" :key="i" :to="'/recommend/'+l.id" class="song-list-item">
+                    <router-link v-for="(l,i) in songs" :key="i" :to="'/playMusic/'+l.id" class="song-list-item">
                         <music-list :singer="l.singer" :name="l.name"></music-list>
                     </router-link>
                 </div>
@@ -136,14 +136,9 @@ export default {
 </script>
 <style scoped lang="stylus" rel="stylesheet/stylus">
 @import '~common/stylus/variable'
+@import '~common/stylus/mixin'
 .disc-detail
-    position absolute
-    top 0
-    right 0
-    bottom 0
-    left 0
-    overflow hidden
-    background-color $color-background
+    full-page()
     &.left-slide-enter-active, &.left-slide-leave-active
         transition all 0.3s
     &.left-slide-enter, &.left-slide-leave-to
