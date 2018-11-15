@@ -62,7 +62,7 @@ export default {
     },
     playMusic(id) {
       songDetail(id).then(res => {
-        this.$router.push({path: '/discDetail/playMusic/' + id, query: { data: res.data.data }})
+        this.$router.push({path: `/playMusic/${id}`, query: { data: res.data }})
       })
     }
   },

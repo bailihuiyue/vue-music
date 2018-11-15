@@ -1,7 +1,8 @@
 <!-- 音乐播放页面 -->
 <template>
     <transition name="player" mode="in-out">
-        <div class="play-music" :style="background">
+        <div class="play-music">
+          <img class="background-img" :src="this.songDetail.pic">
             <div class="header">
                 <music-title :title="title" rotate="-90"></music-title>
             </div>
@@ -17,15 +18,14 @@
 
 <script>
 import musicTitle from '../components/musicTitle/musicTitle'
+import { songDetail } from '../api/song.js'
 export default {
   data() {
     return {
       title: '',
-      background: Object
+      background: Object,
+      songDetail: Object
     }
-  },
-  props: {
-    data: Object
   },
   components: {
     musicTitle
@@ -35,11 +35,12 @@ export default {
 
   computed: {},
   created() {
-    debugger
-    let a = this.$route.params
-    console.log(a)
-    this.background = {
-      background: `url(${this.data.pic})`
+    // songDetail还是放store里面吧
+    this.songDetail = this.$route.query.data
+    if (!this.songDetail) {
+      songDetail(this.$route.params.id).then(res => {
+        this.songDetail = res.data.data
+      })
     }
   },
   mounted() {}
@@ -59,4 +60,8 @@ export default {
         top 10px
         left 10px
         transform rotate(-90deg)
+  .background-img
+    width 100%
+    height 100%
+    filter:blur(20px)
 </style>
