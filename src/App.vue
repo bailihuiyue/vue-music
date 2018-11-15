@@ -1,19 +1,15 @@
 <template>
   <div id="app">
     <m-header></m-header>
-     <tab prevent-default
-     v-model="tabIndex"
-     selected
-     @on-before-index-change="switchTabItem"
-     active-color="#ffcd32"
-     custom-bar-width="35px"
-     >
+    <tab prevent-default v-model="tabIndex" selected @on-before-index-change="switchTabItem" active-color="#ffcd32" custom-bar-width="35px">
       <tab-item>推荐</tab-item>
       <tab-item>歌手</tab-item>
       <tab-item>排行</tab-item>
       <tab-item>搜索</tab-item>
     </tab>
-    <router-view></router-view>
+    <keep-alive>
+      <router-view></router-view>
+    </keep-alive>
   </div>
 </template>
 
@@ -33,7 +29,7 @@ export default {
     }
   },
   methods: {
-    switchTabItem (index) {
+    switchTabItem(index) {
       console.log('on-before-index-change', index)
       this.$vux.loading.show()
       setTimeout(() => {
@@ -48,7 +44,7 @@ export default {
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
 /deep/ .vux-tab
-  background-color:transparent
+  background-color transparent
   .vux-tab-item
-    background:none
+    background none
 </style>

@@ -1,7 +1,8 @@
 import axios from 'axios'
 export const getData = (url, data, name) => {
   // TODO:learn:了解两种封装方式的区别
-  // TODO:question:为什么 return axios.get 前面非要加个return?
+  // TODO:question:为什么 return axios.get 前面非要加个return? 因为不调用的话是getData.then(),然而getData没有then,
+  // 所以无法执行,只return Promise 的话 相当于 getData(){ xxxxx },仍然没有值,必须要getData(){ return xxxxx }才行
   return axios.get(url, {
     params: data
   }).then((res) => {
@@ -12,7 +13,7 @@ export const getData = (url, data, name) => {
       return Promise.reject(res.data.msg)
     }
   }).catch((err) => {
-    return Promise.reject(err)
+    return Promise.reject(new Error(name + ': ' + err.response.data.msg))
   })
 
   // return new Promise(function(resolve, reject) {

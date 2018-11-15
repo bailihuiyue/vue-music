@@ -74,11 +74,11 @@ export default {
   right 0
   bottom 0
   background-color $color-background
-  transform translateX(0)
+  transform translate3d(0,0,0)
   &.left-slide-enter-active, &.left-slide-leave-active
     transition all 0.3s
   &.left-slide-enter, &.left-slide-leave-to
-    transform translateX(100%)
+    transform translate3d(100%,0,0)
   /deep/ .van-row
     margin-top 10px
     .vux-tab-container

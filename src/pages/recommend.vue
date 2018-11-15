@@ -3,6 +3,7 @@
   <div>
     <swipe></swipe>
     <disc-list></disc-list>
+    <router-view></router-view>
   </div>
 </template>
 

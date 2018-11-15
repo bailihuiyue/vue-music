@@ -1,30 +1,32 @@
 <!-- 音乐播放页面 -->
 <template>
-    <div class="play-music">
-        <transition name="" mode="in-out">
-            <music-title title="qwewe" rotate="-90"></music-title>
-        </transition>
-        <transition name="">
+    <transition name="player" mode="in-out">
+        <div class="play-music" :style="background">
+            <div class="header">
+                <music-title :title="title" rotate="-90"></music-title>
+            </div>
             <div class="body">
 
             </div>
-        </transition>
-        <transition name="">
             <div class="footer">
 
             </div>
-        </transition>
-    </div>
+        </div>
+    </transition>
 </template>
 
 <script>
 import musicTitle from '../components/musicTitle/musicTitle'
-
 export default {
   data() {
-    return {}
+    return {
+      title: '',
+      background: Object
+    }
   },
-
+  props: {
+    data: Object
+  },
   components: {
     musicTitle
   },
@@ -32,7 +34,14 @@ export default {
   methods: {},
 
   computed: {},
-  created() {},
+  created() {
+    debugger
+    let a = this.$route.params
+    console.log(a)
+    this.background = {
+      background: `url(${this.data.pic})`
+    }
+  },
   mounted() {}
 }
 </script>
@@ -41,10 +50,10 @@ export default {
 @import '~common/stylus/mixin'
 .play-music
     full-page()
-    &.left-slide-enter-active, &.left-slide-leave-active
-        transition: all 0.3s
-    &.left-slide-enter, &.left-slide-leave-to
-        transform: translateX(100%)
+    &.player-enter-active, &.player-leave-active
+        transition all 0.5s
+    &.player-enter, &.player-leave-to
+        transform scale(0.5)
     .back
         position absolute
         top 10px

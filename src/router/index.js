@@ -14,22 +14,24 @@ export default new Router({
     {
       path: '/',
       name: 'index',
-      component: Recommend
+      component: Recommend,
+      children: [
+        {
+          path: '/discDetail/:id',
+          component: DiscDetail,
+          children: [
+            {
+              path: '/playMusic/:lid',
+              component: PlayMusic
+            }
+          ]
+        }
+      ]
     },
     {
       path: '/user',
       name: 'user',
       component: User
-    },
-    {
-      path: '/discDetail/:id',
-      name: 'discDetail',
-      component: DiscDetail
-    },
-    {
-      path: '/playMusic/:id',
-      name: 'playMusic',
-      component: PlayMusic
     },
     {
       path: '*',

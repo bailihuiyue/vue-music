@@ -1,4 +1,5 @@
-import {commonParams} from './config'
+import {commonParams, key} from './config'
+import {getData} from '../common/js/utils'
 import axios from 'axios'
 
 export function getLyric(mid) {
@@ -19,4 +20,13 @@ export function getLyric(mid) {
   }).then((res) => {
     return Promise.resolve(res.data)
   })
+}
+
+export function songDetail(id) {
+  const url = 'https://api.bzqll.com/music/tencent/song'
+
+  return getData(url, {
+    key,
+    id
+  }, 'songDetail')
 }
