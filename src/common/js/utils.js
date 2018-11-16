@@ -63,3 +63,19 @@ export function prefixStyle(style) {
 
   return vendor + style.charAt(0).toUpperCase() + style.substr(1)
 }
+
+// 图片预加载
+export function preLoadImg(src, cb, vue) {
+  vue.$vux.loading.show()
+  debugger
+  let image = new Image()
+  image.onload = () => {
+    cb()
+    vue.$vux.loading.hide()
+  }
+  image.onerror = function() {
+    vue.$toast('背景图片加载失败!')
+    vue.$vux.loading.hide()
+  }
+  image.src = src
+}

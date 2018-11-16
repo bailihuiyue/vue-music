@@ -7,7 +7,7 @@ import fastclick from 'fastclick'
 import VueLazyload from 'vue-lazyload'
 import { LoadingPlugin } from 'vux'
 import { Toast } from 'vant'
-
+import store from './store'
 import 'common/stylus/index.styl'
 
 Vue.config.productionTip = false
@@ -25,5 +25,6 @@ new Vue({
   el: '#app',
   router,
   components: { App },
-  template: '<App/>'
+  template: '<App/>',
+  store
 })

@@ -43,6 +43,7 @@ export default {
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
+@import '~common/stylus/variable'
 /deep/ .vux-tab
   background-color transparent
   .vux-tab-item

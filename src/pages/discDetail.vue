@@ -34,7 +34,7 @@ import musicTitle from '../components/musicTitle/musicTitle'
 import playAll from '../components/play-all/play-all.vue'
 import musicList from '../components/musicList/musicList'
 import BScroll from 'better-scroll'
-import { prefixStyle } from '../common/js/utils.js'
+import { prefixStyle, preLoadImg } from '../common/js/utils.js'
 import { songDetail } from '../api/song.js'
 const transform = prefixStyle('transform')
 const RESERVED_HEIGHT = 40
@@ -61,8 +61,11 @@ export default {
       this.scrollY = pos.y
     },
     playMusic(id) {
+      let self = this
       songDetail(id).then(res => {
-        this.$router.push({path: `/playMusic/${id}`, query: { data: res.data }})
+        preLoadImg(res.data.pic, function() {
+          self.$router.push({path: `/playMusic/${id}`, query: { data: res.data }})
+        }, self )
       })
     }
   },
