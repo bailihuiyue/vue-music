@@ -6,6 +6,7 @@
         </van-col>
         <van-col span="18">
             <div class="disc-title">{{title}}</div>
+            <div class="disc-singer" v-if="singer">{{singer}}</div>
         </van-col>
     </van-row>
 </template>
@@ -25,7 +26,8 @@ export default {
     rotate: {
       type: String,
       default: '0'
-    }
+    },
+    singer: String
   },
   components: {
     back,
@@ -48,15 +50,18 @@ export default {
 </script>
 <style scoped lang="stylus" rel="stylesheet/stylus">
 @import '~common/stylus/mixin'
+@import '~common/stylus/variable'
 .van-row
-    position absolute
+    position relative
     width 100%
     z-index 3
     top 5px
-.disc-title
+.disc-title,.disc-singer
     ellipsis()
     width 100%
     text-align center
     height 30px
     line-height 30px
+.disc-singer
+  font-size $font-size-medium
 </style>

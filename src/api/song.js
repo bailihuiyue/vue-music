@@ -22,7 +22,7 @@ export function getLyric(mid) {
   })
 }
 
-export function songDetail(id) {
+export function getSongDetail(id) {
   const url = 'https://api.bzqll.com/music/tencent/song'
 
   return getData(url, {

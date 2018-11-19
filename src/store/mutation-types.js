@@ -1,0 +1,1 @@
+export const SET_SONG_DETAIL = 'SET_SONG_DETAIL'

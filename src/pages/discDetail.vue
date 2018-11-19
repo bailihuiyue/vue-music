@@ -3,7 +3,9 @@
   <div class="disc-detail-wrap">
     <transition name="left-slide">
       <div class="disc-detail">
-        <music-title :title="data.title"></music-title>
+        <div class="header">
+          <music-title :title="data.title"></music-title>
+        </div>
         <!-- TODO:tip:大佬说这是一个很经典的自动撑开背景的写法,
             原理是让一个图片和div中的背景图片大小一样,
             img撑开了外层div,内层div也会跟外层大小 -->
@@ -35,7 +37,8 @@ import playAll from '../components/play-all/play-all.vue'
 import musicList from '../components/musicList/musicList'
 import BScroll from 'better-scroll'
 import { prefixStyle, preLoadImg } from '../common/js/utils.js'
-import { songDetail } from '../api/song.js'
+import { getSongDetail } from '../api/song.js'
+import { mapMutations } from 'vuex'
 const transform = prefixStyle('transform')
 const RESERVED_HEIGHT = 40
 export default {
@@ -62,12 +65,22 @@ export default {
     },
     playMusic(id) {
       let self = this
-      songDetail(id).then(res => {
-        preLoadImg(res.data.pic, function() {
-          self.$router.push({path: `/playMusic/${id}`, query: { data: res.data }})
-        }, self )
+      getSongDetail(id).then(res => {
+        preLoadImg(
+          res.data.pic,
+          function() {
+            self.setSongDetail(res.data)
+            self.$router.push({
+              path: `/discDetail/${self.$route.params.id}/playMusic/${id}`
+            })
+          },
+          self
+        )
       })
-    }
+    },
+    ...mapMutations({
+      setSongDetail: 'SET_SONG_DETAIL'
+    })
   },
 
   computed: {},
@@ -144,6 +157,9 @@ export default {
     transition all 0.3s
   &.left-slide-enter, &.left-slide-leave-to
     transform translate3d(100%, 0, 0)
+  .header
+    position absolute
+    width 100%
   .bg-layer
     position absolute
     top 40%

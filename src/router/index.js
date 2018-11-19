@@ -19,11 +19,11 @@ export default new Router({
       // 参看网址:https://www.jianshu.com/p/6304fd09c515
       children: [
         {
-          path: '/discDetail/:id',
+          path: 'discDetail/:id',
           component: DiscDetail,
           children: [
             {
-              path: '/playMusic/:id',
+              path: 'playMusic/:mid',
               component: PlayMusic
             }
           ]

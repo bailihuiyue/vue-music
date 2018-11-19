@@ -67,7 +67,6 @@ export function prefixStyle(style) {
 // 图片预加载
 export function preLoadImg(src, cb, vue) {
   vue.$vux.loading.show()
-  debugger
   let image = new Image()
   image.onload = () => {
     cb()
