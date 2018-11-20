@@ -1,14 +1,14 @@
 <!-- 歌单详情页 -->
 <template>
-  <div class="disc-detail-wrap">
-    <transition name="left-slide">
+  <transition name="left-slide">
+    <div class="disc-detail-wrap">
       <div class="disc-detail">
         <div class="header">
           <music-title :title="data.title"></music-title>
         </div>
         <!-- TODO:tip:大佬说这是一个很经典的自动撑开背景的写法,
-            原理是让一个图片和div中的背景图片大小一样,
-            img撑开了外层div,内层div也会跟外层大小 -->
+              原理是让一个图片和div中的背景图片大小一样,
+              img撑开了外层div,内层div也会跟外层大小 -->
         <div class="bg-img" ref="bgImg">
           <div class="mask"></div>
           <img :src="data.logo">
@@ -25,9 +25,11 @@
           </div>
         </div>
       </div>
-    </transition>
-    <router-view></router-view>
-  </div>
+      <keep-alive>
+        <router-view></router-view>
+      </keep-alive>
+    </div>
+  </transition>
 </template>
 
 <script>
@@ -151,51 +153,53 @@ export default {
 <style scoped lang="stylus" rel="stylesheet/stylus">
 @import '~common/stylus/variable'
 @import '~common/stylus/mixin'
-.disc-detail
+.left-slide-enter-active, .left-slide-leave-active
+  transition all 0.3s
+.left-slide-enter, .left-slide-leave-to
+  transform translate3d(100%, 0, 0)
+.disc-detail-wrap
   full-page()
-  &.left-slide-enter-active, &.left-slide-leave-active
-    transition all 0.3s
-  &.left-slide-enter, &.left-slide-leave-to
-    transform translate3d(100%, 0, 0)
-  .header
-    position absolute
-    width 100%
-  .bg-layer
-    position absolute
-    top 40%
-    height 100%
-    background $color-background
-    width 100%
-  .bg-img
-    height 40%
-    overflow hidden
-    position relative
-    transform-origin top
-    .mask
+  .disc-detail
+    full-page()
+    .header
       position absolute
       width 100%
+    .bg-layer
+      position absolute
+      top 40%
       height 100%
-      background rgba(0, 0, 0, 0.4)
-    img
+      background $color-background
       width 100%
-      object-fit cover
-    .play-all-wrap
+    .bg-img
+      height 40%
+      overflow hidden
+      position relative
+      transform-origin top
+      .mask
+        position absolute
+        width 100%
+        height 100%
+        background rgba(0, 0, 0, 0.4)
+      img
+        width 100%
+        object-fit cover
+      .play-all-wrap
+        position absolute
+        bottom 5%
+        width 100%
+      .desc
+        position absolute
+        bottom 25%
+        padding 20px
+        font-size $font-size-small
+    .song-list-wrap
+      z-index 1
       position absolute
-      bottom 5%
       width 100%
-    .desc
-      position absolute
-      bottom 25%
-      padding 20px
-      font-size $font-size-small
-  .song-list-wrap
-    z-index 1
-    position absolute
-    width 100%
-    height 60%
-    bottom 0
-    .song-list
-      width 90%
-      margin 0 auto
-      padding 20px 0
+      height 60%
+      bottom 0
+      .song-list
+        width 90%
+        margin 0 auto
+        padding 20px 0
 </style>

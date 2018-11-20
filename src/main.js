@@ -20,6 +20,8 @@ Vue.use(VueLazyload, {
   loading: require('common/image/default.png')
 })
 
+Vue.prototype.log = console.log
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

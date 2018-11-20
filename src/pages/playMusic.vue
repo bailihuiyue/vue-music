@@ -2,6 +2,7 @@
 <template>
   <transition name="player" mode="in-out">
     <div class="play-music">
+      <audio ref="audio" id="audio" @canplay="canplay" :src="songDetail.url">123</audio>
       <div class="background">
         <img class="background-img" :src="this.songDetail.pic">
       </div>
@@ -19,17 +20,18 @@
         <div class="progress">
           <van-row>
             <van-col span="4">
-              <div class="passed-time">1:13</div>
+              <div class="passed-time">{{'0:00'}}</div>
             </van-col>
             <van-col span="16">
               <div class="music-progress-bar-wrap">
                 <div class="progress-line" ref="progressLine"></div>
+                <div class="passed-progress-line" ref="passedProgressLine"></div>
                 <div class="progress-dot" ref="progressDot"></div>
               </div>
             </van-col>
             <van-col span="4">
               <!-- left:leave的过去式,并不是左边的意思 -->
-              <div class="left-time">3:19</div>
+              <div class="left-time" v-if="duration">{{format(duration)}}</div>
             </van-col>
           </van-row>
         </div>
@@ -44,14 +46,14 @@ import musicTitle from '../components/musicTitle/musicTitle'
 import { getSongDetail } from '../api/song.js'
 import { mapState } from 'vuex'
 import { Row, Col } from 'vant'
-import {prefixStyle} from 'common/js/utils'
-const transform = prefixStyle('transform')
 export default {
   data() {
     return {
       title: '',
       background: Object,
-      songDetail: Object
+      songDetail: Object,
+      duration: '',
+      audio: ''
     }
   },
   components: {
@@ -60,7 +62,44 @@ export default {
     [Col.name]: Col
   },
 
-  methods: {},
+  methods: {
+    canplay(a) {
+      // this.audio.play()
+      this.duration = this.audio.duration
+    },
+    controlMusic(type) {
+      switch (type) {
+        case 'play':
+          break
+        case 'pause':
+          break
+        case 'next':
+          break
+        case 'prev':
+          break
+        default:
+      }
+    },
+    format(interval) {
+      interval = interval | 0
+      const minute = interval / 60 | 0
+      const second = this._pad(interval % 60)
+      return `${minute}:${second}`
+    },
+    // afterEnter(e) {
+    //   let progressLine = this.$refs.progressLine.getBoundingClientRect()
+    //   // this.$refs.progressDot.style[transform] = `translate3d(-${progressLine.left + 5}px,0,0)`
+    //   console.log(progressLine)
+    // }
+    _pad(num, n = 2) {
+      let len = num.toString().length
+      while (len < n) {
+        num = '0' + num
+        len++
+      }
+      return num
+    }
+  },
 
   computed: {
     ...mapState(['stateSongDetail'])
@@ -74,13 +113,9 @@ export default {
         console.log(this.songDetail)
       })
     }
-
-    debugger
-    let progressLine = this.$refs.progressLine.getBoundingClientRect()
-    this.$refs.progressDot.style[transform] = `translate3d(-${progressLine.left + 5}px,0,0)`
-    console.log(progressLine)
   },
   mounted() {
+    this.audio = this.$refs.audio
   }
 }
 </script>
@@ -122,8 +157,8 @@ export default {
         height 100%
     .lyric
       text-align center
-      margin-top 40px
-      font-size $font-size-medium-x
+      font-size $font-size-medium
+      color: $color-text-l
   .footer
     position absolute
     bottom 50px
@@ -134,15 +169,23 @@ export default {
     .progress
       width 80%
       margin auto
-      div
-        display inline-block
+      // div
+      //   display inline-block
       .van-row
         width 100%
-      .progress-line
+      .progress-line,.passed-progress-line
         width 100%
         height 5px
         background-color $color-background
-        opacity .2
+        opacity 0.2
+        vertical-align middle
+        border-radius 100px
+        // display block
+      .passed-progress-line
+        background-color $color-theme
+        opacity 1
+        position relative
+        top -5px
       .progress-dot
         width 10px
         height 10px
@@ -151,13 +194,12 @@ export default {
         background $color-theme
         position relative
         top -13px
-        transform translateX(-110px)
-      .passed-time,.left-time,.music-progress-bar-wrap
+      .passed-time, .left-time, .music-progress-bar-wrap
         height $font-size-medium
         line-height $font-size-medium
         font-size $font-size-medium
         text-align center
         width 100%
       .music-progress-bar-wrap
-        width 100%
+        text-align left
 </style>
