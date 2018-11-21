@@ -1,1 +1,2 @@
 export const SET_SONG_DETAIL = 'SET_SONG_DETAIL'
+export const GET_SONG_LIST = 'GET_SONG_LIST'

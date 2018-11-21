@@ -1,3 +1,4 @@
 export default {
-  stateSongDetail: {}
+  stateSongDetail: {},
+  songList: {}
 }

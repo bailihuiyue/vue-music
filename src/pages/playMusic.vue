@@ -2,7 +2,7 @@
 <template>
   <transition name="player" mode="in-out">
     <div class="play-music">
-      <audio ref="audio" id="audio" @canplay="canplay" :src="songDetail.url">123</audio>
+      <audio ref="audio" id="audio" @canplay="canplay" @timeupdate="timeupdate" :src="songDetail.url">123</audio>
       <div class="background">
         <img class="background-img" :src="this.songDetail.pic">
       </div>
@@ -25,8 +25,8 @@
             <van-col span="16">
               <div class="music-progress-bar-wrap">
                 <div class="progress-line" ref="progressLine"></div>
-                <div class="passed-progress-line" ref="passedProgressLine"></div>
-                <div class="progress-dot" ref="progressDot"></div>
+                <div class="passed-progress-line" ref="passedProgressLine" :style="{'width':passedProgressWidth+'px'}"></div>
+                <div class="progress-dot" ref="progressDot" :style="{'width': progressDotWidth + 'px', 'height': progressDotWidth + 'px','transform':'translate3d('+progressDotLeft+'px,0,0)'}"></div>
               </div>
             </van-col>
             <van-col span="4">
@@ -35,7 +35,23 @@
             </van-col>
           </van-row>
         </div>
-        <div class="play-btns"></div>
+        <div class="control-btns">
+           <div class="icon-wrap" @click="playMode">
+              <i class="icon-random i-left"></i>
+            </div>
+            <div class="icon-wrap" @click="prev">
+              <i class="icon-prev i-left"></i>
+            </div>
+            <div class="icon-wrap" @click="pause">
+              <i class="icon-pause i-middle" :class="isPaused?'icon-play':'icon-pause'"></i>
+            </div>
+            <div class="icon-wrap" @click="next">
+              <i class="icon-next i-right"></i>
+            </div>
+            <div class="icon-wrap" @click="toggleFavorite">
+              <i class="icon icon-not-favorite i-right"></i>
+            </div>
+        </div>
       </div>
     </div>
   </transition>
@@ -53,7 +69,17 @@ export default {
       background: Object,
       songDetail: Object,
       duration: '',
-      audio: ''
+      audio: '',
+      isPaused: false,
+      currentTime: 0,
+      // 用来控制播放进度点的大小
+      progressDotWidth: 10,
+      // 已经播放过的长度(黄色进度条)
+      passedProgressWidth: 0,
+      // 进度条总长
+      passedProgressTotal: 0,
+      // 缓存播放点
+      progressDotLeft: -5
     }
   },
   components: {
@@ -66,6 +92,7 @@ export default {
     canplay(a) {
       // this.audio.play()
       this.duration = this.audio.duration
+      this.passedProgressTotal = this.$refs.progressLine.clientWidth
     },
     controlMusic(type) {
       switch (type) {
@@ -98,6 +125,32 @@ export default {
         len++
       }
       return num
+    },
+    timeupdate(e) {
+      // 计算播放完成黄色条的长度
+      this.passedProgressWidth = (this.audio.currentTime / this.duration) * this.passedProgressTotal
+      // 计算播放点的位置
+      this.progressDotLeft = this.passedProgressWidth - 5
+    },
+    playMode() {
+
+    },
+    prev() {
+
+    },
+    pause() {
+      this.isPaused = !this.isPaused
+      if (this.isPaused) {
+        this.audio.pause()
+      } else {
+        this.audio.play()
+      }
+    },
+    next() {
+
+    },
+    toggleFavorite() {
+
     }
   },
 
@@ -106,16 +159,17 @@ export default {
   },
   created() {
     this.songDetail = this.stateSongDetail.pic ? this.stateSongDetail : ''
-    console.log(this.songDetail)
     if (!this.songDetail) {
       getSongDetail(this.$route.params.mid).then(res => {
         this.songDetail = res.data
-        console.log(this.songDetail)
       })
     }
   },
   mounted() {
+    // 缓存audio对象
     this.audio = this.$refs.audio
+    // 缓存播放点位置
+    this.progressDotLeft = this.$refs.progressDot.left
   }
 }
 </script>
@@ -126,8 +180,15 @@ export default {
   full-page()
   &.player-enter-active, &.player-leave-active
     transition all 0.5s
+    .header, .footer
+      // 贝塞尔曲线,抄的
+      transition: all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32)
   &.player-enter, &.player-leave-to
-    transform scale(0.5)
+    opacity: 0
+    .header
+      transform: translate3d(0, -100px, 0)
+    .footer
+      transform: translate3d(0, 100px, 0)
   .back
     position absolute
     top 10px
@@ -161,16 +222,14 @@ export default {
       color: $color-text-l
   .footer
     position absolute
-    bottom 50px
+    bottom 30px
     width 100%
     .dot
       text-align center
-      margin 30px
+      margin 15px
     .progress
       width 80%
       margin auto
-      // div
-      //   display inline-block
       .van-row
         width 100%
       .progress-line,.passed-progress-line
@@ -180,20 +239,19 @@ export default {
         opacity 0.2
         vertical-align middle
         border-radius 100px
-        // display block
+        position relative
       .passed-progress-line
         background-color $color-theme
         opacity 1
         position relative
-        top -5px
+      .progress-line
+        top 5px
       .progress-dot
-        width 10px
-        height 10px
         border 3px solid $color-text
         border-radius 50%
         background $color-theme
         position relative
-        top -13px
+        top -11px
       .passed-time, .left-time, .music-progress-bar-wrap
         height $font-size-medium
         line-height $font-size-medium
@@ -202,4 +260,18 @@ export default {
         width 100%
       .music-progress-bar-wrap
         text-align left
+    .control-btns
+      width 80%
+      margin 20px auto
+      display:flex
+      .icon-wrap
+        text-align center
+        flex 1
+        line-height 35px
+        .i-left,.i-right,.i-middle
+          color $color-theme
+          font-size $icon-font-other
+          vertical-align middle
+        .i-middle
+          font-size $icon-font-middle
 </style>
