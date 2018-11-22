@@ -1,4 +1,5 @@
 export default {
   stateSongDetail: {},
-  songList: {}
+  stateSongList: {},
+  stateCurrentSongIndex: 0
 }

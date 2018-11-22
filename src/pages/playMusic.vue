@@ -2,7 +2,7 @@
 <template>
   <transition name="player" mode="in-out">
     <div class="play-music">
-      <audio ref="audio" id="audio" @canplay="canplay" @timeupdate="timeupdate" :src="songDetail.url">123</audio>
+      <audio ref="audio" id="audio" @canplay="canplay" @ended="ended" @timeupdate="timeupdate" :src="songDetail.url">123</audio>
       <div class="background">
         <img class="background-img" :src="this.songDetail.pic">
       </div>
@@ -60,8 +60,9 @@
 <script>
 import musicTitle from '../components/musicTitle/musicTitle'
 import { getSongDetail } from '../api/song.js'
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 import { Row, Col } from 'vant'
+import { addToStorage, fav } from '../common/js/utils.js'
 export default {
   data() {
     return {
@@ -90,9 +91,8 @@ export default {
 
   methods: {
     canplay(a) {
-      // this.audio.play()
+      this.audio.play()
       this.duration = this.audio.duration
-      this.passedProgressTotal = this.$refs.progressLine.clientWidth
     },
     controlMusic(type) {
       switch (type) {
@@ -136,7 +136,13 @@ export default {
 
     },
     prev() {
-
+      let index = this.stateCurrentSongIndex
+      if (index && index > 0) {
+        this.songDetail = this.stateSongList[index - 1]
+        this.setCurrnetSongIndex(index - 1)
+      } else {
+        this.$toast('已经是第一首了!')
+      }
     },
     pause() {
       this.isPaused = !this.isPaused
@@ -147,15 +153,28 @@ export default {
       }
     },
     next() {
-
+      let index = this.stateCurrentSongIndex
+      let length = this.stateSongList.length
+      if (index >= 0 && index < length) {
+        this.songDetail = this.stateSongList[index + 1]
+        this.setCurrnetSongIndex(index + 1)
+      } else {
+        this.$toast('已经是最后一首了!')
+      }
+    },
+    ended() {
+      this.next()
     },
     toggleFavorite() {
-
-    }
+      addToStorage(fav, this.songDetail)
+    },
+    ...mapMutations({
+      setCurrnetSongIndex: 'SET_CURRENT_SONG_INDEX'
+    })
   },
 
   computed: {
-    ...mapState(['stateSongDetail'])
+    ...mapState(['stateSongDetail', 'stateSongList', 'stateCurrentSongIndex'])
   },
   created() {
     this.songDetail = this.stateSongDetail.pic ? this.stateSongDetail : ''
@@ -170,6 +189,8 @@ export default {
     this.audio = this.$refs.audio
     // 缓存播放点位置
     this.progressDotLeft = this.$refs.progressDot.left
+    // 获取播放进度条长度
+    this.passedProgressTotal = this.$refs.progressLine.clientWidth
   }
 }
 </script>

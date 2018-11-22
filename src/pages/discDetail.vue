@@ -19,7 +19,7 @@
         <div class="bg-layer" ref="layer"></div>
         <div class="song-list-wrap" v-show="songs.length>0" ref="BScroll">
           <div class="song-list">
-            <div v-for="(l,i) in songs" :key="i" @click="playMusic(l.id)" class="song-list-item">
+            <div v-for="(l,i) in songs" :key="i" @click="playMusic(l.id,i)" class="song-list-item">
               <music-list :singer="l.singer" :name="l.name"></music-list>
             </div>
           </div>
@@ -63,13 +63,14 @@ export default {
     onScroll: function(pos) {
       this.scrollY = pos.y
     },
-    playMusic(id) {
+    playMusic(id, i) {
       let self = this
       getSongDetail(id).then(res => {
         preLoadImg(
           res.data.pic,
           function() {
             self.setSongDetail(res.data)
+            self.setCurrnetSongIndex(i)
             self.$router.push({
               path: `/discDetail/${self.$route.params.id}/playMusic/${id}`
             })
@@ -79,7 +80,9 @@ export default {
       })
     },
     ...mapMutations({
-      setSongDetail: 'SET_SONG_DETAIL'
+      setSongDetail: 'SET_SONG_DETAIL',
+      setSongList: 'SET_SONG_LIST',
+      setCurrnetSongIndex: 'SET_CURRENT_SONG_INDEX'
     })
   },
 
@@ -90,6 +93,7 @@ export default {
       .then(res => {
         this.data = res.data
         this.songs = res.data.songs
+        this.setSongList(res.data.songs)
         this.bg = { background: `url(${res.data.logo})` }
       })
       .catch(err => {

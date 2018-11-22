@@ -1,4 +1,5 @@
 import axios from 'axios'
+import storage from 'good-storage'
 export const getData = (url, data, name) => {
   // TODO:learn:了解两种封装方式的区别
   // TODO:question:为什么 return axios.get 前面非要加个return? 因为不调用的话是getData.then(),然而getData没有then,
@@ -78,3 +79,31 @@ export function preLoadImg(src, cb, vue) {
   }
   image.src = src
 }
+
+export function addToStorage(type, item) {
+  if (storage.has(type)) {
+    let list = storage.get(type)
+    if (!list.find(() => { return isObjExist(list, item) })) {
+      list.unshift(item)
+      storage.set(type, list)
+    }
+  } else {
+    storage.set(type, [item])
+  }
+  console.log(storage.get('fav'))
+}
+
+function isObjExist(list, item) {
+  for (let l in list) {
+    if (list[l].id === item.id) {
+      return true
+    }
+    return false
+  }
+}
+
+export const fav = 'fav'
+export const history = 'history'
+
+// 歌手图片地址
+// https://y.gtimg.cn/music/photo_new/T001R300x300M000${002J4UUk29y8BY}.jpg?max_age=2592000
