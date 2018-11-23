@@ -32,6 +32,20 @@ export const getData = (url, data, name) => {
   // })
 }
 
+// 获取纯文本内容
+export const getText = (url, name) => {
+  return axios({
+    method: 'get',
+    url,
+    responseType: 'text'
+  }).then((res) => {
+    return Promise.resolve(res.data)
+  }).catch((err) => {
+    console.log(err)
+    return Promise.reject(new Error('getText失败:' + name))
+  })
+}
+
 // 判断是添加哪种css3类型
 export function prefixStyle(style) {
   let elementStyle = document.createElement('div').style

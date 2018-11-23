@@ -40,3 +40,8 @@ get√
 
 1.util.js return axios 为什么要return
 2.discDetail.vue song-list 使用margin-top时为什么把song-list-wrap顶爆了
+3.touchmove无法执行事件代理
+
+
+bug:收藏的歌曲刷新页面不会被记住
+    目前无法通过地址栏url转发歌曲

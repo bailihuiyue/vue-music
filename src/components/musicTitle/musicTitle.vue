@@ -2,7 +2,7 @@
 <template>
     <van-row>
         <van-col span="3">
-            <back :style="rotateBackBtn"></back>
+            <back :style="rotateBackBtn" :isShowPlayer="isShowPlayer"></back>
         </van-col>
         <van-col span="18">
             <div class="disc-title">{{title}}</div>
@@ -27,7 +27,8 @@ export default {
       type: String,
       default: '0'
     },
-    singer: String
+    singer: String,
+    isShowPlayer: Boolean
   },
   components: {
     back,

@@ -7,20 +7,20 @@
         <img class="background-img" :src="this.songDetail.pic">
       </div>
       <div class="header">
-        <music-title :title="songDetail.name" :singer="songDetail.singer" rotate="-90"></music-title>
+        <music-title :title="songDetail.name" :singer="songDetail.singer" rotate="-90" :isShowPlayer="true"></music-title>
       </div>
       <div class="body">
-        <div class="disc">
+        <div class="disc rotate" :class="isPaused?'pause-rotate':''">
           <img :src="this.songDetail.pic">
         </div>
-        <div class="lyric">111111111111111111111111111</div>
+        <div class="lyric">{{lyric}}</div>
       </div>
       <div class="footer">
         <div class="dot">滑动的点</div>
         <div class="progress">
           <van-row>
             <van-col span="4">
-              <div class="passed-time">{{'0:00'}}</div>
+              <div class="passed-time">{{format(audio.currentTime) }}</div>
             </van-col>
             <van-col span="16">
               <!-- <div class="music-progress-bar-wrap">
@@ -28,7 +28,14 @@
                 <div class="passed-progress-line" ref="passedProgressLine" :style="{'width':passedProgressWidth+'px'}"></div>
                 <div class="progress-dot" ref="progressDot" :style="{'width': progressDotWidth + 'px', 'height': progressDotWidth + 'px','transform':'translate3d('+progressDotLeft+'px,0,0)'}"></div>
               </div> -->
-              <van-slider v-model="sliderValue" @change="slideMusic" bar-height="5px" :step="0.01"/>
+              <van-slider
+              @touchstart.native="startSlide"
+              @touchend.native="endSlide"
+              @touchmove.native="moveSlide"
+              v-model="sliderValue"
+              @change="slideMusic"
+              bar-height="5px"
+              :step="0.01" />
             </van-col>
             <van-col span="4">
               <!-- left:leave的过去式,并不是左边的意思 -->
@@ -60,10 +67,11 @@
 
 <script>
 import musicTitle from '../components/musicTitle/musicTitle'
-import { getSongDetail } from '../api/song.js'
+import { getSongDetail, getLyric } from '../api/song.js'
 import { mapState, mapMutations } from 'vuex'
 import { Row, Col, Slider } from 'vant'
 import { Range } from 'vux'
+import Lyric from 'lyric-parser'
 import {
   addToStorage,
   fav,
@@ -83,7 +91,12 @@ export default {
       isPaused: false,
       currentTime: 0,
       toggleFavourite: false,
-      sliderValue: 0
+      sliderValue: 0,
+      // 表示滑块是否在滑动中
+      sliding: false,
+      // lyricParser 实体类
+      lyricParser: '',
+      lyric: ''
     }
   },
   components: {
@@ -98,6 +111,7 @@ export default {
     canplay(a) {
       this.audio.play()
       this.duration = this.audio.duration
+      this.lyricParser.play()
     },
     format(interval) {
       interval = interval | 0
@@ -119,8 +133,10 @@ export default {
       return num
     },
     timeupdate(e) {
-      // 计算播放完成黄色条的长度
-      this.sliderValue = this.audio.currentTime / this.duration * 100
+      if (!this.sliding) {
+        // 计算播放完成黄色条的长度
+        this.sliderValue = (this.audio.currentTime / this.duration) * 100
+      }
     },
     playMode() {
       // order random loop
@@ -175,9 +191,22 @@ export default {
         this.toggleFavourite = true
       }
     },
+    startSlide(e) {
+      this.sliding = true
+    },
+    endSlide(e) {
+      this.sliding = false
+    },
+    moveSlide(e) {
+      // TODO:question:touchmove无法执行事件代理?上面的startSlide当触摸到小点的时候是
+      // 可以触发的,但是这个方法却无法触发
+      // debugger
+      // let all = document.getElementsByClassName('van-slider')[0].offsetWidth
+      // let passed = document.getElementsByClassName('van-slider__bar')[0].offsetWidth
+      // this.audio.currentTime = this.duration * passed / all
+    },
     slideMusic(percent) {
       this.audio.currentTime = this.duration * percent / 100
-      this.log(this.audio.currentTime)
     },
     ...mapMutations({
       setCurrnetSongIndex: 'SET_CURRENT_SONG_INDEX',
@@ -216,6 +245,10 @@ export default {
           this.log('chnageMusicOrder 失败!')
           return index
       }
+    },
+    changeLrc({lineNum, txt}) {
+      this.log({lineNum, txt})
+      this.lyric = txt
     }
   },
 
@@ -228,7 +261,8 @@ export default {
     ])
   },
   created() {
-    // 如果store中没有歌曲数据,就通过ajax获取,目前已经不通过路由获取音乐信息了,所以以下方法不需要了
+    // 如果store中没有歌曲数据,就通过ajax获取,
+    // 目前已经不通过路由获取音乐信息了(但是bug是无法通过地址栏url转发歌曲),所以以下方法不需要了
     this.songDetail = this.stateSongDetail.pic ? this.stateSongDetail : ''
     if (!this.songDetail) {
       getSongDetail(this.$route.params.mid).then(res => {
@@ -239,6 +273,14 @@ export default {
         }
       })
     }
+    getLyric(this.songDetail.lrc).then((res) => {
+      this.lyricParser = new Lyric(res, this.changeLrc)
+      // if (this.lyricParser.lines.length === 0) {
+      //   this.lyric = [{time: 0, txt: '此歌曲为没有填词的纯音乐，请您欣赏'}]
+      // } else {
+      //   this.lyric = this.lyricParser.lines
+      // }
+    })
   },
   mounted() {
     // 缓存audio对象
@@ -252,113 +294,122 @@ export default {
 .play-music
   full-page()
   &.player-enter-active, &.player-leave-active
-    transition all 0.5s
+    transition: all 0.5s
     .header, .footer
       // 贝塞尔曲线,抄的
-      transition all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32)
+      transition: all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32)
   &.player-enter, &.player-leave-to
-    opacity 0
+    opacity: 0
     .header
-      transform translate3d(0, -100px, 0)
+      transform: translate3d(0, -100px, 0)
     .footer
-      transform translate3d(0, 100px, 0)
+      transform: translate3d(0, 100px, 0)
   .back
-    position absolute
-    top 10px
-    left 10px
-    transform rotate(-90deg)
+    position: absolute
+    top: 10px
+    left: 10px
+    transform: rotate(-90deg)
   .background
-    width 100%
-    height 100%
-    opacity 0.6
-    filter blur(20px)
-    position absolute
-    top 0
-    left 0
-    z-index -1
+    width: 100%
+    height: 100%
+    opacity: 0.6
+    filter: blur(20px)
+    position: absolute
+    top: 0
+    left: 0
+    z-index: -1
     .background-img
-      width 100%
-      height 100%
+      width: 100%
+      height: 100%
   .header, .body
     .disc
-      width 80%
-      margin 20px auto
-      border-radius 50%
-      overflow hidden
-      border 10px solid rgba(255, 255, 255, 0.15)
+      width: 80%
+      margin: 20px auto
+      border-radius: 50%
+      overflow: hidden
+      border: 10px solid rgba(255, 255, 255, 0.15)
+      &.rotate
+        animation: rotate-disc 25s linear infinite
+      &.pause-rotate
+        animation-play-state: paused
+      @keyframes rotate-disc
+        from
+          transform: rotate(0)
+        to
+          transform: rotate(360deg)
       img
-        width 100%
-        height 100%
+        width: 100%
+        height: 100%
     .lyric
-      text-align center
-      font-size $font-size-medium
-      color $color-text-l
+      text-align: center
+      font-size: $font-size-medium
+      color: $color-text-l
   .footer
-    position absolute
-    bottom 30px
-    width 100%
+    position: absolute
+    bottom: 30px
+    width: 100%
     .dot
-      text-align center
-      margin 15px
+      text-align: center
+      margin: 15px
     .progress
-      width 80%
-      margin auto
+      width: 80%
+      margin: auto
       .van-row
-        width 100%
-        display flex
-        align-items center
+        width: 100%
+        display: flex
+        align-items: center
         .van-slider
-          background-color $scroll-bar-background
+          background-color: $scroll-bar-background
           /deep/ .van-slider__bar
-            background-color $color-theme
+            background-color: $color-theme
             .van-slider__button
-              border 3px solid $color-text
-              background $color-theme
-              width 12px
-              height 12px
+              border: 3px solid $color-text
+              background: $color-theme
+              width: 12px
+              height: 12px
       // .progress-line, .passed-progress-line
-      //   width 100%
-      //   height 5px
-      //   background-color $color-background
-      //   opacity 0.2
-      //   vertical-align middle
-      //   border-radius 100px
-      //   position relative
+      // width 100%
+      // height 5px
+      // background-color $color-background
+      // opacity 0.2
+      // vertical-align middle
+      // border-radius 100px
+      // position relative
       // .passed-progress-line
-      //   background-color $color-theme
-      //   opacity 1
-      //   position relative
+      // background-color $color-theme
+      // opacity 1
+      // position relative
       // .progress-line
-      //   top 5px
+      // top 5px
       // .progress-dot
-      //   border 3px solid $color-text
-      //   border-radius 50%
-      //   background $color-theme
-      //   position relative
-      //   top -11px
+      // border 3px solid $color-text
+      // border-radius 50%
+      // background $color-theme
+      // position relative
+      // top -11px
       .passed-time, .left-time, .music-progress-bar-wrap
-        height $font-size-medium
-        line-height $font-size-medium
-        font-size $font-size-medium
-        width 100%
+        height: $font-size-medium
+        line-height: $font-size-medium
+        font-size: $font-size-medium
+        width: 100%
       .left-time
-        text-align right
-      .passed-time,.music-progress-bar-wrap
-        text-align left
+        text-align: right
+      .passed-time, .music-progress-bar-wrap
+        text-align: left
     .control-btns
-      width 80%
-      margin 20px auto
-      display flex
+      width: 80%
+      margin: 20px auto
+      display: flex
       .icon-wrap
-        text-align center
-        flex 1
-        line-height 35px
+        text-align: center
+        flex: 1
+        line-height: 35px
         .icon-favorite.red
-          color $color-sub-theme
+          color: $color-sub-theme
         .i-left, .i-right, .i-middle
-          color $color-theme
-          font-size $icon-font-other
-          vertical-align middle
+          color: $color-theme
+          font-size: $icon-font-other
+          vertical-align: middle
         .i-middle
-          font-size $icon-font-middle
+          font-size: $icon-font-middle
 </style>

@@ -6,16 +6,29 @@
 </template>
 
 <script>
+import {mapMutations} from 'vuex'
 export default {
   data() {
     return {}
   },
-
+  props: {
+    isShowPlayer: {
+      type: Boolean,
+      default: false
+    }
+  },
   components: {},
 
   methods: {
+    ...mapMutations({
+      showPlayMusic: 'SHOW_PLAY_MUSIC'
+    }),
     back() {
-      this.$router.back()
+      if (this.isShowPlayer) {
+        this.showPlayMusic(false)
+      } else {
+        this.$router.back()
+      }
     }
   },
   computed: {},
