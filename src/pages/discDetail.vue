@@ -71,9 +71,7 @@ export default {
           function() {
             self.setSongDetail(res.data)
             self.setCurrnetSongIndex(i)
-            self.$router.push({
-              path: `/discDetail/${self.$route.params.id}/playMusic/${id}`
-            })
+            self.showPlayMusic(true)
           },
           self
         )
@@ -82,7 +80,8 @@ export default {
     ...mapMutations({
       setSongDetail: 'SET_SONG_DETAIL',
       setSongList: 'SET_SONG_LIST',
-      setCurrnetSongIndex: 'SET_CURRENT_SONG_INDEX'
+      setCurrnetSongIndex: 'SET_CURRENT_SONG_INDEX',
+      showPlayMusic: 'SHOW_PLAY_MUSIC'
     })
   },
 

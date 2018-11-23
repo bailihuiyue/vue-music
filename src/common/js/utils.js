@@ -90,10 +90,18 @@ export function addToStorage(type, item) {
   } else {
     storage.set(type, [item])
   }
-  console.log(storage.get('fav'))
 }
 
-function isObjExist(list, item) {
+export function removeFromStorage(type, item) {
+  let list = storage.get(type)
+  let index = list.findIndex(() => { return isObjExist(list, item) })
+  if (index >= 0) {
+    list.splice(index, 1)
+    storage.set(type, list)
+  }
+}
+
+export function isObjExist(list, item) {
   for (let l in list) {
     if (list[l].id === item.id) {
       return true
@@ -102,6 +110,19 @@ function isObjExist(list, item) {
   }
 }
 
+// 获取收藏的歌曲,当type为history时表示听过的历史记录
+export function getFavourite(type) {
+  return storage.get(type)
+}
+
+export function isInList(type, item) {
+  return isObjExist(getFavourite(type), item)
+}
+
+export function getRandom(begin, end) {
+  var num = Math.round(Math.random() * (end - begin) + begin)
+  return num
+}
 export const fav = 'fav'
 export const history = 'history'
 

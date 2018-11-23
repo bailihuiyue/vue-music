@@ -9,5 +9,11 @@ export default {
   },
   [types.SET_CURRENT_SONG_INDEX](state, currentSongIndex) {
     state.stateCurrentSongIndex = currentSongIndex
+  },
+  [types.SHOW_PLAY_MUSIC](state, showPlayMusic) {
+    state.stateShowPlayMusic = showPlayMusic
+  },
+  [types.SET_PLAY_MODE](state, playMode) {
+    state.statePlayMode = playMode
   }
 }

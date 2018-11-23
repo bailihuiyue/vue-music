@@ -2,7 +2,7 @@
 <template>
   <transition name="player" mode="in-out">
     <div class="play-music">
-      <audio ref="audio" id="audio" @canplay="canplay" @ended="ended" @timeupdate="timeupdate" :src="songDetail.url">123</audio>
+      <audio ref="audio" id="audio" @canplay="canplay" @ended="ended" @error="error" @timeupdate="timeupdate" :src="songDetail.url">123</audio>
       <div class="background">
         <img class="background-img" :src="this.songDetail.pic">
       </div>
@@ -23,11 +23,12 @@
               <div class="passed-time">{{'0:00'}}</div>
             </van-col>
             <van-col span="16">
-              <div class="music-progress-bar-wrap">
+              <!-- <div class="music-progress-bar-wrap">
                 <div class="progress-line" ref="progressLine"></div>
                 <div class="passed-progress-line" ref="passedProgressLine" :style="{'width':passedProgressWidth+'px'}"></div>
                 <div class="progress-dot" ref="progressDot" :style="{'width': progressDotWidth + 'px', 'height': progressDotWidth + 'px','transform':'translate3d('+progressDotLeft+'px,0,0)'}"></div>
-              </div>
+              </div> -->
+              <van-slider v-model="sliderValue" @change="slideMusic" bar-height="5px" :step="0.01"/>
             </van-col>
             <van-col span="4">
               <!-- left:leave的过去式,并不是左边的意思 -->
@@ -36,21 +37,21 @@
           </van-row>
         </div>
         <div class="control-btns">
-           <div class="icon-wrap" @click="playMode">
-              <i class="icon-random i-left"></i>
-            </div>
-            <div class="icon-wrap" @click="prev">
-              <i class="icon-prev i-left"></i>
-            </div>
-            <div class="icon-wrap" @click="pause">
-              <i class="icon-pause i-middle" :class="isPaused?'icon-play':'icon-pause'"></i>
-            </div>
-            <div class="icon-wrap" @click="next">
-              <i class="icon-next i-right"></i>
-            </div>
-            <div class="icon-wrap" @click="toggleFavorite">
-              <i class="icon icon-not-favorite i-right"></i>
-            </div>
+          <div class="icon-wrap" @click="playMode">
+            <i class="icon i-left" :class="'icon-'+statePlayMode"></i>
+          </div>
+          <div class="icon-wrap" @click="prev">
+            <i class="icon-prev i-left"></i>
+          </div>
+          <div class="icon-wrap" @click="pause">
+            <i class="icon-pause i-middle" :class="isPaused?'icon-play':'icon-pause'"></i>
+          </div>
+          <div class="icon-wrap" @click="next">
+            <i class="icon-next i-right"></i>
+          </div>
+          <div class="icon-wrap" @click="toggleFavorite">
+            <i class="icon i-right" :class="toggleFavourite?'icon-favorite red':'icon-not-favorite'"></i>
+          </div>
         </div>
       </div>
     </div>
@@ -61,8 +62,16 @@
 import musicTitle from '../components/musicTitle/musicTitle'
 import { getSongDetail } from '../api/song.js'
 import { mapState, mapMutations } from 'vuex'
-import { Row, Col } from 'vant'
-import { addToStorage, fav } from '../common/js/utils.js'
+import { Row, Col, Slider } from 'vant'
+import { Range } from 'vux'
+import {
+  addToStorage,
+  fav,
+  isInList,
+  removeFromStorage,
+  getRandom
+} from '../common/js/utils.js'
+import { setTimeout } from 'timers'
 export default {
   data() {
     return {
@@ -73,20 +82,16 @@ export default {
       audio: '',
       isPaused: false,
       currentTime: 0,
-      // 用来控制播放进度点的大小
-      progressDotWidth: 10,
-      // 已经播放过的长度(黄色进度条)
-      passedProgressWidth: 0,
-      // 进度条总长
-      passedProgressTotal: 0,
-      // 缓存播放点
-      progressDotLeft: -5
+      toggleFavourite: false,
+      sliderValue: 0
     }
   },
   components: {
     musicTitle,
     [Row.name]: Row,
-    [Col.name]: Col
+    [Col.name]: Col,
+    [Slider.name]: Slider,
+    Range
   },
 
   methods: {
@@ -94,22 +99,9 @@ export default {
       this.audio.play()
       this.duration = this.audio.duration
     },
-    controlMusic(type) {
-      switch (type) {
-        case 'play':
-          break
-        case 'pause':
-          break
-        case 'next':
-          break
-        case 'prev':
-          break
-        default:
-      }
-    },
     format(interval) {
       interval = interval | 0
-      const minute = interval / 60 | 0
+      const minute = (interval / 60) | 0
       const second = this._pad(interval % 60)
       return `${minute}:${second}`
     },
@@ -128,21 +120,33 @@ export default {
     },
     timeupdate(e) {
       // 计算播放完成黄色条的长度
-      this.passedProgressWidth = (this.audio.currentTime / this.duration) * this.passedProgressTotal
-      // 计算播放点的位置
-      this.progressDotLeft = this.passedProgressWidth - 5
+      this.sliderValue = this.audio.currentTime / this.duration * 100
     },
     playMode() {
-
+      // order random loop
+      switch (this.statePlayMode) {
+        case 'order':
+          this.setPlayMode('random')
+          break
+        case 'random':
+          this.setPlayMode('loop')
+          break
+        case 'loop':
+          this.setPlayMode('order')
+          break
+        default:
+          this.setPlayMode('order')
+      }
     },
     prev() {
-      let index = this.stateCurrentSongIndex
-      if (index && index > 0) {
-        this.songDetail = this.stateSongList[index - 1]
-        this.setCurrnetSongIndex(index - 1)
-      } else {
-        this.$toast('已经是第一首了!')
-      }
+      let index = this.chnageMusicOrder(false)
+      this.songDetail = this.stateSongList[index]
+      this.setCurrnetSongIndex(index)
+    },
+    next() {
+      let index = this.chnageMusicOrder(true)
+      this.songDetail = this.stateSongList[index]
+      this.setCurrnetSongIndex(index)
     },
     pause() {
       this.isPaused = !this.isPaused
@@ -152,45 +156,93 @@ export default {
         this.audio.play()
       }
     },
-    next() {
-      let index = this.stateCurrentSongIndex
-      let length = this.stateSongList.length
-      if (index >= 0 && index < length) {
-        this.songDetail = this.stateSongList[index + 1]
-        this.setCurrnetSongIndex(index + 1)
-      } else {
-        this.$toast('已经是最后一首了!')
-      }
-    },
     ended() {
       this.next()
     },
+    error() {
+      this.$toast('版权要求,该歌曲无法播放,即将切换下一首~~')
+      let self = this
+      setTimeout(() => {
+        self.next()
+      }, 500)
+    },
     toggleFavorite() {
-      addToStorage(fav, this.songDetail)
+      if (isInList(fav, this.stateSongDetail)) {
+        removeFromStorage(fav, this.songDetail)
+        this.toggleFavourite = false
+      } else {
+        addToStorage(fav, this.songDetail)
+        this.toggleFavourite = true
+      }
+    },
+    slideMusic(percent) {
+      this.audio.currentTime = this.duration * percent / 100
+      this.log(this.audio.currentTime)
     },
     ...mapMutations({
-      setCurrnetSongIndex: 'SET_CURRENT_SONG_INDEX'
-    })
+      setCurrnetSongIndex: 'SET_CURRENT_SONG_INDEX',
+      setPlayMode: 'SET_PLAY_MODE'
+    }),
+    chnageMusicOrder(isNext) {
+      let index = this.stateCurrentSongIndex
+      let length = this.stateSongList.length
+      let next = 0
+      switch (this.statePlayMode) {
+        case 'order':
+          if (isNext) {
+            if (index >= 0 && index < length - 1) {
+              next = index + 1
+              return next
+            } else {
+              this.$toast('已经是最后一首了!')
+              return length - 1
+            }
+          } else {
+            if (!isNaN(index) && index > 0) {
+              next = index - 1
+              return next
+            } else {
+              this.$toast('已经是第一首了!')
+              return 0
+            }
+          }
+        case 'random':
+          next = getRandom(0, length - 1)
+          return next
+        case 'loop':
+          next = index
+          return next
+        default:
+          this.log('chnageMusicOrder 失败!')
+          return index
+      }
+    }
   },
 
   computed: {
-    ...mapState(['stateSongDetail', 'stateSongList', 'stateCurrentSongIndex'])
+    ...mapState([
+      'stateSongDetail',
+      'stateSongList',
+      'stateCurrentSongIndex',
+      'statePlayMode'
+    ])
   },
   created() {
+    // 如果store中没有歌曲数据,就通过ajax获取,目前已经不通过路由获取音乐信息了,所以以下方法不需要了
     this.songDetail = this.stateSongDetail.pic ? this.stateSongDetail : ''
     if (!this.songDetail) {
       getSongDetail(this.$route.params.mid).then(res => {
         this.songDetail = res.data
+        // 判断歌曲是否被收藏
+        if (isInList(fav, this.songDetail)) {
+          this.toggleFavourite = true
+        }
       })
     }
   },
   mounted() {
     // 缓存audio对象
     this.audio = this.$refs.audio
-    // 缓存播放点位置
-    this.progressDotLeft = this.$refs.progressDot.left
-    // 获取播放进度条长度
-    this.passedProgressTotal = this.$refs.progressLine.clientWidth
   }
 }
 </script>
@@ -203,13 +255,13 @@ export default {
     transition all 0.5s
     .header, .footer
       // 贝塞尔曲线,抄的
-      transition: all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32)
+      transition all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32)
   &.player-enter, &.player-leave-to
-    opacity: 0
+    opacity 0
     .header
-      transform: translate3d(0, -100px, 0)
+      transform translate3d(0, -100px, 0)
     .footer
-      transform: translate3d(0, 100px, 0)
+      transform translate3d(0, 100px, 0)
   .back
     position absolute
     top 10px
@@ -240,7 +292,7 @@ export default {
     .lyric
       text-align center
       font-size $font-size-medium
-      color: $color-text-l
+      color $color-text-l
   .footer
     position absolute
     bottom 30px
@@ -253,43 +305,57 @@ export default {
       margin auto
       .van-row
         width 100%
-      .progress-line,.passed-progress-line
-        width 100%
-        height 5px
-        background-color $color-background
-        opacity 0.2
-        vertical-align middle
-        border-radius 100px
-        position relative
-      .passed-progress-line
-        background-color $color-theme
-        opacity 1
-        position relative
-      .progress-line
-        top 5px
-      .progress-dot
-        border 3px solid $color-text
-        border-radius 50%
-        background $color-theme
-        position relative
-        top -11px
+        display flex
+        align-items center
+        .van-slider
+          background-color $scroll-bar-background
+          /deep/ .van-slider__bar
+            background-color $color-theme
+            .van-slider__button
+              border 3px solid $color-text
+              background $color-theme
+              width 12px
+              height 12px
+      // .progress-line, .passed-progress-line
+      //   width 100%
+      //   height 5px
+      //   background-color $color-background
+      //   opacity 0.2
+      //   vertical-align middle
+      //   border-radius 100px
+      //   position relative
+      // .passed-progress-line
+      //   background-color $color-theme
+      //   opacity 1
+      //   position relative
+      // .progress-line
+      //   top 5px
+      // .progress-dot
+      //   border 3px solid $color-text
+      //   border-radius 50%
+      //   background $color-theme
+      //   position relative
+      //   top -11px
       .passed-time, .left-time, .music-progress-bar-wrap
         height $font-size-medium
         line-height $font-size-medium
         font-size $font-size-medium
-        text-align center
         width 100%
-      .music-progress-bar-wrap
+      .left-time
+        text-align right
+      .passed-time,.music-progress-bar-wrap
         text-align left
     .control-btns
       width 80%
       margin 20px auto
-      display:flex
+      display flex
       .icon-wrap
         text-align center
         flex 1
         line-height 35px
-        .i-left,.i-right,.i-middle
+        .icon-favorite.red
+          color $color-sub-theme
+        .i-left, .i-right, .i-middle
           color $color-theme
           font-size $icon-font-other
           vertical-align middle

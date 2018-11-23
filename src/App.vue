@@ -10,18 +10,22 @@
     <keep-alive>
       <router-view></router-view>
     </keep-alive>
+    <play-music v-if="stateShowPlayMusic"></play-music>
   </div>
 </template>
 
 <script>
 import MHeader from './components/header/m-header.vue'
+import playMusic from './pages/playMusic'
 import { Tab, TabItem } from 'vux'
+import { mapState } from 'vuex'
 export default {
   name: 'App',
   components: {
     MHeader,
     Tab,
-    TabItem
+    TabItem,
+    playMusic
   },
   data() {
     return {
@@ -38,7 +42,10 @@ export default {
       }, 100)
     }
   },
-  mounted() {}
+  mounted() {},
+  computed: {
+    ...mapState(['stateShowPlayMusic'])
+  }
 }
 </script>
 
