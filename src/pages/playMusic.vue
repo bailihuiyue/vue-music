@@ -96,7 +96,9 @@ export default {
       sliding: false,
       // lyricParser 实体类
       lyricParser: '',
-      lyric: ''
+      lyric: '',
+      // 让每首歌的canplay只触发一次
+      canplayTriggered: false
     }
   },
   components: {
@@ -109,9 +111,18 @@ export default {
 
   methods: {
     canplay(a) {
-      this.audio.play()
-      this.duration = this.audio.duration
-      this.lyricParser.play()
+      if (!this.canplayTriggered) {
+        this.audio.play()
+        this.duration = this.audio.duration
+
+        if (this.lyricParser) {
+          this.lyricParser.play()
+        } else {
+        // 处理无歌词情况
+          this.lyric = '此歌曲为没有填词的纯音乐，请您欣赏'
+        }
+        this.canplayTriggered = true
+      }
     },
     format(interval) {
       interval = interval | 0
@@ -165,12 +176,15 @@ export default {
       this.setCurrnetSongIndex(index)
     },
     pause() {
+      debugger
       this.isPaused = !this.isPaused
       if (this.isPaused) {
         this.audio.pause()
       } else {
         this.audio.play()
       }
+      this.lyricParser.togglePlay()
+      console.log(1)
     },
     ended() {
       this.next()
@@ -207,6 +221,10 @@ export default {
     },
     slideMusic(percent) {
       this.audio.currentTime = this.duration * percent / 100
+      this.lyricParser.seek(this.audio.currentTime * 1000)
+      // 拖动播放条之后自动播放
+      this.isPaused = false
+      this.log(this.audio.currentTime)
     },
     ...mapMutations({
       setCurrnetSongIndex: 'SET_CURRENT_SONG_INDEX',
@@ -246,12 +264,33 @@ export default {
           return index
       }
     },
+    getLrc() {
+      getLyric(this.songDetail.lrc).then((res) => {
+      // 处理无歌词情况
+        if (res !== '[00:00:00]此歌曲为没有填词的纯音乐，请您欣赏') {
+          this.lyricParser = new Lyric(res, this.changeLrc)
+        }
+      })
+    },
     changeLrc({lineNum, txt}) {
       this.log({lineNum, txt})
       this.lyric = txt
     }
   },
-
+  watch: {
+    songDetail(newVal, oldVal) {
+      this.log(1)
+      // 换歌之后先把上一次的歌词停了
+      // this.lyricParser.stop()
+      // 控制canplayTriggered的权利在获取歌词方法中是因为songDetail是最先改变的,改变之后歌曲就
+      // 加载了,这时候再获取歌词,此时歌词和歌曲都没有运行,然后改变canplayTriggered让歌词和歌曲同时play起来,这样就同步了
+      if (newVal.id !== oldVal.id) {
+        this.getLrc()
+        // 更换歌词了,让canplay重新运行一次
+        this.canplayTriggered = false
+      }
+    }
+  },
   computed: {
     ...mapState([
       'stateSongDetail',
@@ -273,14 +312,6 @@ export default {
         }
       })
     }
-    getLyric(this.songDetail.lrc).then((res) => {
-      this.lyricParser = new Lyric(res, this.changeLrc)
-      // if (this.lyricParser.lines.length === 0) {
-      //   this.lyric = [{time: 0, txt: '此歌曲为没有填词的纯音乐，请您欣赏'}]
-      // } else {
-      //   this.lyric = this.lyricParser.lines
-      // }
-    })
   },
   mounted() {
     // 缓存audio对象
