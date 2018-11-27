@@ -120,8 +120,8 @@ export function isObjExist(list, item) {
     if (list[l].id === item.id) {
       return true
     }
-    return false
   }
+  return false
 }
 
 // 获取收藏的歌曲,当type为history时表示听过的历史记录

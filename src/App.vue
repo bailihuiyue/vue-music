@@ -10,7 +10,7 @@
     <keep-alive>
       <router-view></router-view>
     </keep-alive>
-    <play-music v-if="stateShowPlayMusic"></play-music>
+    <play-music ref="playMusic"></play-music>
   </div>
 </template>
 
@@ -18,7 +18,7 @@
 import MHeader from './components/header/m-header.vue'
 import playMusic from './pages/playMusic'
 import { Tab, TabItem } from 'vux'
-import { mapState } from 'vuex'
+// import { mapState } from 'vuex'
 export default {
   name: 'App',
   components: {
@@ -42,9 +42,19 @@ export default {
       }, 100)
     }
   },
-  mounted() {},
+  mounted() {
+    debugger
+    // 预加载计算playMusic组件中body的高度
+    this.$refs.playMusic.$el.style.display = 'block'
+    this.$refs.playMusic.$el.style.zIndex = '-100'
+    let bodyTop = this.$refs.playMusic.$el.getElementsByClassName('body')[0].getBoundingClientRect().top
+    let footerTop = this.$refs.playMusic.$el.getElementsByClassName('footer')[0].getBoundingClientRect().top
+    this.$refs.playMusic.$el.getElementsByClassName('body')[0].style.height = footerTop - bodyTop + 'px'
+    this.$refs.playMusic.$el.style.display = 'none'
+    this.$refs.playMusic.$el.style.zIndex = '0'
+  },
   computed: {
-    ...mapState(['stateShowPlayMusic'])
+
   }
 }
 </script>
