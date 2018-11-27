@@ -43,13 +43,13 @@ export default {
     }
   },
   mounted() {
-    debugger
+    // debugger
     // 预加载计算playMusic组件中body的高度
     this.$refs.playMusic.$el.style.display = 'block'
     this.$refs.playMusic.$el.style.zIndex = '-100'
     let bodyTop = this.$refs.playMusic.$el.getElementsByClassName('body')[0].getBoundingClientRect().top
     let footerTop = this.$refs.playMusic.$el.getElementsByClassName('footer')[0].getBoundingClientRect().top
-    this.$refs.playMusic.$el.getElementsByClassName('body')[0].style.height = footerTop - bodyTop + 'px'
+    this.$refs.playMusic.$el.getElementsByClassName('body')[0].style.height = footerTop - bodyTop - 10 + 'px'
     this.$refs.playMusic.$el.style.display = 'none'
     this.$refs.playMusic.$el.style.zIndex = '0'
   },

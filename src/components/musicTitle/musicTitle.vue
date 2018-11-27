@@ -6,7 +6,7 @@
         </van-col>
         <van-col span="18">
             <div class="disc-title">{{title}}</div>
-            <div class="disc-singer" v-if="singer">{{singer}}</div>
+            <div class="disc-singer" v-if="singer&&isShowPlayer">{{singer}}</div>
         </van-col>
     </van-row>
 </template>
@@ -22,12 +22,18 @@ export default {
     }
   },
   props: {
-    title: String,
+    title: {
+      type: String,
+      default: '歌曲名称'
+    },
     rotate: {
       type: String,
       default: '0'
     },
-    singer: String,
+    singer: {
+      type: String,
+      default: '歌唱家'
+    },
     isShowPlayer: Boolean
   },
   components: {

@@ -18,7 +18,7 @@
             <div class="lyric">{{lyric}}</div>
           </swiper-item>
            <swiper-item>
-             123
+             {{fullLyric}}
            </swiper-item>
         </swiper>
       </div>
@@ -98,7 +98,10 @@ export default {
       sliding: false,
       // lyricParser 实体类
       lyricParser: '',
+      // 旋转盘页面的单行歌词
       lyric: '',
+      // 右划之后的完整歌词页面
+      fullLyric: '',
       // 让每首歌的canplay只触发一次
       canplayTriggered: false
     }
@@ -280,7 +283,7 @@ export default {
         } else {
           this.lyricParser = ''
         }
-        this.lyric = res
+        this.fullLyric = res
         console.log(res)
       })
     },
