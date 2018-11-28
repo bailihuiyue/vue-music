@@ -14,12 +14,12 @@ export function getRecommend() {
   return jsonp(url, data, options)
 }
 
-// 热歌列表
+// 热歌列表  流派/最热
 export function getDiscList() {
   const url = 'https://api.bzqll.com/music/tencent/hotSongList'
   const data = {
     key,
-    categoryId: '10000000',
+    categoryId: '6',
     sortId: '3',
     limit: '60'
   }

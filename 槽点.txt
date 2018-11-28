@@ -16,7 +16,8 @@ vant swipe轮播配合v-lazy之后指示条无法根据图片大小自动定位
     eslint配置
     vue-lazy-load
     图片预加载
-
+    flex 布局
+    
 UI地址:http://ustbhuangyi.com/music/#/recommend    
 接口地址:https://www.bzqll.com/2018/10/39.html#tencent
 

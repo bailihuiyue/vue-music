@@ -1,67 +1,90 @@
 <!-- 音乐播放页面 -->
 <template>
-  <transition name="player" mode="in-out" @afterEnter="afterEnter">
-    <div class="play-music" v-show="stateShowPlayMusic">
-      <audio ref="audio" id="audio" @canplay="canplay" @ended="ended" @error="error" @timeupdate="timeupdate" :src="songDetail.url">123</audio>
-      <div class="background">
-        <img class="background-img" :src="this.songDetail.pic">
-      </div>
-      <div class="header">
-        <music-title :title="songDetail.name" :singer="songDetail.singer" rotate="-90" :isShowPlayer="true"></music-title>
-      </div>
-      <div class="body" ref="body">
-        <swiper dots-position="center" height="100%" :min-moving-distance="50">
-          <swiper-item>
-            <div class="disc rotate" :class="isPaused?'pause-rotate':''">
-              <img :src="this.songDetail.pic">
-            </div>
-            <div class="lyric">{{lyric}}</div>
-          </swiper-item>
-           <swiper-item>
-             {{fullLyric}}
-           </swiper-item>
-        </swiper>
-      </div>
-      <div class="footer" ref='footer'>
-        <div class="progress">
-          <van-row>
-            <van-col span="4">
-              <div class="passed-time">{{format(audio.currentTime) }}</div>
-            </van-col>
-            <van-col span="16">
-              <!-- <div class="music-progress-bar-wrap">
+  <div class="player-wrapper">
+    <transition name="player" mode="in-out" @afterEnter="afterEnter">
+      <div class="play-music" v-show="stateShowPlayMusic">
+        <audio ref="audio" id="audio" @canplay="canplay" @ended="ended" @error="error" @timeupdate="timeupdate" :src="songDetail.url">123</audio>
+        <div class="background">
+          <img class="background-img" :src="songDetail.pic">
+        </div>
+        <div class="header">
+          <music-title :title="songDetail.name" :singer="songDetail.singer" rotate="-90" :isShowPlayer="true"></music-title>
+        </div>
+        <div class="body" ref="body">
+          <swiper dots-position="center" height="100%" :min-moving-distance="20">
+            <swiper-item>
+              <div class="disc rotate" :class="isPaused?'pause-rotate':''">
+                <img :src="songDetail.pic">
+              </div>
+              <div class="lyric">{{currentLyric.txt}}</div>
+            </swiper-item>
+            <swiper-item>
+              <scroll ref="fullLyricScroll">
+                <div class="full-lyric-wrap" ref="fullLyricWrap">
+                  <div class='txt' v-for="(lrc,index) in fullLyric" :key="lrc.time" :class="currentLyric.lineNum===index?'current':''" ref="lyricLine">{{lrc.txt}}</div>
+                </div>
+              </scroll>
+            </swiper-item>
+          </swiper>
+        </div>
+        <div class="footer" ref='footer'>
+          <div class="progress">
+            <van-row>
+              <van-col span="4">
+                <div class="passed-time">{{format(audio.currentTime) }}</div>
+              </van-col>
+              <van-col span="16">
+                <!-- <div class="music-progress-bar-wrap">
                 <div class="progress-line" ref="progressLine"></div>
                 <div class="passed-progress-line" ref="passedProgressLine" :style="{'width':passedProgressWidth+'px'}"></div>
                 <div class="progress-dot" ref="progressDot" :style="{'width': progressDotWidth + 'px', 'height': progressDotWidth + 'px','transform':'translate3d('+progressDotLeft+'px,0,0)'}"></div>
               </div> -->
-              <van-slider @touchstart.native="startSlide" @touchend.native="endSlide" @touchmove.native="moveSlide" v-model="sliderValue" @change="slideMusic" bar-height="5px" :step="0.01" />
-            </van-col>
-            <van-col span="4">
-              <!-- left:leave的过去式,并不是左边的意思 -->
-              <div class="left-time" v-if="duration">{{format(duration)}}</div>
-            </van-col>
-          </van-row>
-        </div>
-        <div class="control-btns">
-          <div class="icon-wrap" @click="playMode">
-            <i class="icon i-left" :class="'icon-'+statePlayMode"></i>
+                <van-slider @touchstart.native="startSlide" @touchend.native="endSlide" @touchmove.native="moveSlide" v-model="sliderValue" @change="slideMusic" bar-height="5px" :step="0.01" />
+              </van-col>
+              <van-col span="4">
+                <!-- left:leave的过去式,并不是左边的意思 -->
+                <div class="left-time" v-if="duration">{{format(duration)}}</div>
+              </van-col>
+            </van-row>
           </div>
-          <div class="icon-wrap" @click="prev">
-            <i class="icon-prev i-left"></i>
-          </div>
-          <div class="icon-wrap" @click="pause">
-            <i class="icon-pause i-middle" :class="isPaused?'icon-play':'icon-pause'"></i>
-          </div>
-          <div class="icon-wrap" @click="next">
-            <i class="icon-next i-right"></i>
-          </div>
-          <div class="icon-wrap" @click="toggleFavorite">
-            <i class="icon i-right" :class="toggleFavourite?'icon-favorite red':'icon-not-favorite'"></i>
+          <div class="control-btns">
+            <div class="icon-wrap" @click="playMode">
+              <i class="icon i-left" :class="'icon-'+statePlayMode"></i>
+            </div>
+            <div class="icon-wrap" @click="prev">
+              <i class="icon-prev i-left"></i>
+            </div>
+            <div class="icon-wrap" @click="pause">
+              <i class="icon-pause i-middle" :class="isPaused?'icon-play':'icon-pause'"></i>
+            </div>
+            <div class="icon-wrap" @click="next">
+              <i class="icon-next i-right"></i>
+            </div>
+            <div class="icon-wrap" @click="toggleFavorite">
+              <i class="icon i-right" :class="toggleFavourite?'icon-favorite red':'icon-not-favorite'"></i>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </transition>
+    </transition>
+    <transition name='mini'>
+      <div class="mini-player" v-show="!stateShowPlayMusic&&stateSongList.length>0">
+        <div class="disc-mini">
+          <img class="img" :src="songDetail.pic">
+        </div>
+        <div class="song-info-min">
+          <div class="name">{{songDetail.name}}</div>
+          <div class="singer">{{songDetail.singer}}</div>
+        </div>
+        <div class="progress-mini">
+
+        </div>
+        <div class="song-list-mini">
+
+        </div>
+      </div>
+    </transition>
+  </div>
 </template>
 
 <script>
@@ -74,6 +97,7 @@ import { mapState, mapMutations } from 'vuex'
 import { Row, Col, Slider } from 'vant'
 import { Swiper, SwiperItem } from 'vux'
 import Lyric from 'lyric-parser'
+import scroll from '../components/scroll/scroll'
 import {
   addToStorage,
   fav,
@@ -83,11 +107,20 @@ import {
 } from '../common/js/utils.js'
 import { setTimeout } from 'timers'
 export default {
+  components: {
+    musicTitle,
+    [Row.name]: Row,
+    [Col.name]: Col,
+    [Slider.name]: Slider,
+    Swiper,
+    SwiperItem,
+    scroll
+  },
   data() {
     return {
       title: '',
-      background: Object,
-      songDetail: Object,
+      background: {},
+      songDetail: {},
       duration: '',
       audio: '',
       isPaused: false,
@@ -99,22 +132,16 @@ export default {
       // lyricParser 实体类
       lyricParser: '',
       // 旋转盘页面的单行歌词
-      lyric: '',
+      currentLyric: {},
       // 右划之后的完整歌词页面
-      fullLyric: '',
+      fullLyric: [],
+      lrcLineNum: 0,
       // 让每首歌的canplay只触发一次
-      canplayTriggered: false
+      canplayTriggered: false,
+      // 歌词列表中可以看见的在中间的那个歌词
+      middleLrc: 0
     }
   },
-  components: {
-    musicTitle,
-    [Row.name]: Row,
-    [Col.name]: Col,
-    [Slider.name]: Slider,
-    Swiper,
-    SwiperItem
-  },
-
   methods: {
     canplay(a) {
       if (!this.canplayTriggered) {
@@ -125,7 +152,8 @@ export default {
           this.lyricParser && this.lyricParser.play()
         } else {
           // 处理无歌词情况
-          this.lyric = '此歌曲为没有填词的纯音乐，请您欣赏'
+          this.log(this.currentLyric)
+          this.currentLyric.txt = '此歌曲为没有填词的纯音乐，请您欣赏'
         }
         this.canplayTriggered = true
       }
@@ -270,7 +298,6 @@ export default {
       this.songDetail = this.stateSongList[index]
       this.setCurrnetSongIndex(index)
       if (this.statePlayMode === 'loop') {
-        debugger
         this.audio.currentTime = 0
         this.lyricParser.seek(0)
       }
@@ -280,16 +307,32 @@ export default {
         // 处理无歌词情况
         if (res !== '[00:00:00]此歌曲为没有填词的纯音乐，请您欣赏') {
           this.lyricParser = new Lyric(res, this.changeLrc)
+          this.fullLyric = this.lyricParser.lines
         } else {
           this.lyricParser = ''
+          this.fullLyric = [
+            { time: 0, txt: '此歌曲为没有填词的纯音乐，请您欣赏' }
+          ]
         }
-        this.fullLyric = res
-        console.log(res)
+
+        // 计算,让正在唱的歌词总是在最中间高亮
+        this.$nextTick(() => {
+          let wrapHeight = this.$refs.fullLyricWrap.clientHeight
+          let number = this.fullLyric.length
+          let bodyHeight = this.$refs.body.clientHeight
+          let visiblelyrics = Math.floor((bodyHeight / wrapHeight) * number)
+          this.middleLrc = Math.round(visiblelyrics / 2)
+        })
       })
     },
     changeLrc({ lineNum, txt }) {
-      this.lyric = txt
-      this.log({ lineNum, txt })
+      this.currentLyric = { lineNum, txt }
+      if (lineNum > this.middleLrc) {
+        let lineEl = this.$refs.lyricLine[lineNum - this.middleLrc]
+        this.$refs.fullLyricScroll.scrollToElement(lineEl, 1000)
+      } else {
+        this.$refs.fullLyricScroll.scrollTo(0, 0, 1000)
+      }
     }
   },
   watch: {
@@ -382,16 +425,20 @@ export default {
       width 100%
       height 100%
   .body
+    padding 20px 0
     .vux-slider
       height 100%
+      overflow initial
       /deep/ .vux-icon-dot
         height 8px
         width 8px
         background-color $color-text-l
       /deep/ .vux-icon-dot.active
-          width: 20px
-          border-radius: 5px
-          background: $color-text-ll
+        width 20px
+        border-radius 5px
+        background $color-text-ll
+      /deep/ .vux-indicator
+        bottom -25px
       .disc
         width 80%
         margin 20px auto
@@ -414,6 +461,14 @@ export default {
       text-align center
       font-size $font-size-medium
       color $color-text-l
+    .full-lyric-wrap
+      .txt
+        line-height 32px
+        color $color-text-l
+        font-size $font-size-medium
+        text-align center
+        &.current
+          color $color-text
   .footer
     position absolute
     bottom 30px
@@ -482,4 +537,36 @@ export default {
           vertical-align middle
         .i-middle
           font-size $icon-font-middle
+.mini-player
+  width 100%
+  height 60px
+  position fixed
+  left 0
+  bottom 0
+  background-color $color-highlight-background
+  display flex
+  align-items center
+  justify-content center
+  .disc-mini
+    .img
+      width 40px
+      height 40px
+      border-radius 50%
+      flex 1
+  .song-info-min
+    display flex
+    flex-direction column
+    justify-content center
+    flex 1
+    line-height 20px
+    overflow hidden
+    .name
+      ellipsis()
+      margin-bottom: 2px
+      font-size: $font-size-medium
+      color: $color-text
+    .desc
+      ellipsis()
+      font-size: $font-size-small
+      color: $color-text-d
 </style>

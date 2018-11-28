@@ -45,13 +45,18 @@ export default {
   mounted() {
     // debugger
     // 预加载计算playMusic组件中body的高度
-    this.$refs.playMusic.$el.style.display = 'block'
-    this.$refs.playMusic.$el.style.zIndex = '-100'
-    let bodyTop = this.$refs.playMusic.$el.getElementsByClassName('body')[0].getBoundingClientRect().top
-    let footerTop = this.$refs.playMusic.$el.getElementsByClassName('footer')[0].getBoundingClientRect().top
-    this.$refs.playMusic.$el.getElementsByClassName('body')[0].style.height = footerTop - bodyTop - 10 + 'px'
-    this.$refs.playMusic.$el.style.display = 'none'
-    this.$refs.playMusic.$el.style.zIndex = '0'
+    let playMusic = this.$refs.playMusic.$el.getElementsByClassName('play-music')[0]
+    let body = this.$refs.playMusic.$el.getElementsByClassName('body')[0]
+    let footer = this.$refs.playMusic.$el.getElementsByClassName('footer')[0]
+
+    playMusic.style.display = 'block'
+    playMusic.style.zIndex = '-100'
+    let bodyTop = body.getBoundingClientRect().top
+    let footerTop = footer.getBoundingClientRect().top
+    //                                             20 * 2:上下的margin距离
+    body.style.height = footerTop - bodyTop - 10 - 20 * 2 + 'px'
+    playMusic.style.display = 'none'
+    playMusic.style.zIndex = '0'
   },
   computed: {
 
