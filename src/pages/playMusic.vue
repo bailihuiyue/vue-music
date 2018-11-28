@@ -21,7 +21,7 @@
             <swiper-item>
               <scroll ref="fullLyricScroll">
                 <div class="full-lyric-wrap" ref="fullLyricWrap">
-                  <div class='txt' v-for="(lrc,index) in fullLyric" :key="lrc.time" :class="currentLyric.lineNum===index?'current':''" ref="lyricLine">{{lrc.txt}}</div>
+                  <div class='txt' v-for="(lrc,index) in fullLyric" :key="index" :class="currentLyric.lineNum===index?'current':''" ref="lyricLine">{{lrc.txt}}</div>
                 </div>
               </scroll>
             </swiper-item>
@@ -77,10 +77,17 @@
           <div class="singer">{{songDetail.singer}}</div>
         </div>
         <div class="progress-mini">
-
+          <x-circle
+            :stroke-width="7"
+            stroke-color="#ffcd32"
+            :trail-width="7"
+            trail-color="rgba(255, 205, 49, 0.5)"
+            :percent="50">
+            <i class="iconfont i-middle" :class="isPaused?'iconfont-pause-mini':'iconfont-play-mini'"></i>
+          </x-circle>
         </div>
-        <div class="song-list-mini">
-
+        <div class="song-list-btn-mini">
+          <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
@@ -95,7 +102,7 @@ import {
 } from '../api/song.js'
 import { mapState, mapMutations } from 'vuex'
 import { Row, Col, Slider } from 'vant'
-import { Swiper, SwiperItem } from 'vux'
+import { Swiper, SwiperItem, XCircle } from 'vux'
 import Lyric from 'lyric-parser'
 import scroll from '../components/scroll/scroll'
 import {
@@ -114,7 +121,8 @@ export default {
     [Slider.name]: Slider,
     Swiper,
     SwiperItem,
-    scroll
+    scroll,
+    XCircle
   },
   data() {
     return {
@@ -548,11 +556,11 @@ export default {
   align-items center
   justify-content center
   .disc-mini
+    flex 0 0 40px
+    margin 0 10px 0 20px
     .img
-      width 40px
-      height 40px
+      width 100%
       border-radius 50%
-      flex 1
   .song-info-min
     display flex
     flex-direction column
@@ -565,8 +573,20 @@ export default {
       margin-bottom: 2px
       font-size: $font-size-medium
       color: $color-text
-    .desc
+    .singer
       ellipsis()
       font-size: $font-size-small
       color: $color-text-d
+  .progress-mini
+    flex 0 0 30px
+    margin-right 15px
+    .iconfont
+      color $color-theme-d
+      font-weight 1000
+  .song-list-btn-mini
+    flex 0 0 30px
+    .icon-playlist
+      font-size 30px
+      color $color-theme-d
+      margin-right 20px
 </style>
