@@ -2,7 +2,7 @@ export default {
   stateSongDetail: {},
   stateSongList: {},
   stateCurrentSongIndex: 0,
-  stateShowPlayMusic: false,
+  stateShowPlayMusic: null,
   // order random loop
   statePlayMode: 'order'
 }

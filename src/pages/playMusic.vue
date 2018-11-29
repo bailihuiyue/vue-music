@@ -68,8 +68,8 @@
       </div>
     </transition>
     <transition name='mini'>
-      <div class="mini-player" v-show="!stateShowPlayMusic&&stateSongList.length>0">
-        <div class="disc-mini">
+      <div class="mini-player" v-show="stateShowPlayMusic!==null&&stateShowPlayMusic===false&&stateSongList.length>0" @click="showPlayMusic(true)">
+        <div class="disc-mini rotate" :class="isPaused?'pause-rotate':''">
           <img class="img" :src="songDetail.pic">
         </div>
         <div class="song-info-min">
@@ -77,20 +77,26 @@
           <div class="singer">{{songDetail.singer}}</div>
         </div>
         <div class="progress-mini">
-          <x-circle
-            :stroke-width="7"
-            stroke-color="#ffcd32"
-            :trail-width="7"
-            trail-color="rgba(255, 205, 49, 0.5)"
-            :percent="50">
-            <i class="iconfont i-middle" :class="isPaused?'iconfont-pause-mini':'iconfont-play-mini'"></i>
+          <x-circle @click.native.stop="pause" :stroke-width="7" stroke-color="#ffcd32" :trail-width="7" trail-color="rgba(255, 205, 49, 0.5)" :percent="sliderValue">
+            <i class="iconfont i-middle" :class="isPaused?'iconfont-play-mini':'iconfont-pause-mini'"></i>
           </x-circle>
         </div>
-        <div class="song-list-btn-mini">
+        <div class="song-list-btn-mini" @click.stop="showSongListMini">
           <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
+    <div class="song-list-mini">
+      <van-popup v-model="isShowSongListMini" position="bottom">
+        <scroll :data="stateSongList">
+          <div class="song-list-min-scroll-wrap">
+            <div v-for="(l,i) in stateSongList" :key="i" @click.stop="removeMusic(l.id,i)" class="song-list-item">
+              <music-list :name="l.name"></music-list>
+            </div>
+          </div>
+        </scroll>
+      </van-popup>
+    </div>
   </div>
 </template>
 
@@ -101,7 +107,7 @@ import {
   getLyric
 } from '../api/song.js'
 import { mapState, mapMutations } from 'vuex'
-import { Row, Col, Slider } from 'vant'
+import { Row, Col, Slider, Popup } from 'vant'
 import { Swiper, SwiperItem, XCircle } from 'vux'
 import Lyric from 'lyric-parser'
 import scroll from '../components/scroll/scroll'
@@ -112,7 +118,7 @@ import {
   removeFromStorage,
   getRandom
 } from '../common/js/utils.js'
-import { setTimeout } from 'timers'
+import musicList from '../components/musicList/musicList'
 export default {
   components: {
     musicTitle,
@@ -122,7 +128,9 @@ export default {
     Swiper,
     SwiperItem,
     scroll,
-    XCircle
+    XCircle,
+    [Popup.name]: Popup,
+    musicList
   },
   data() {
     return {
@@ -147,7 +155,8 @@ export default {
       // 让每首歌的canplay只触发一次
       canplayTriggered: false,
       // 歌词列表中可以看见的在中间的那个歌词
-      middleLrc: 0
+      middleLrc: 0,
+      isShowSongListMini: false
     }
   },
   methods: {
@@ -266,7 +275,8 @@ export default {
     },
     ...mapMutations({
       setCurrnetSongIndex: 'SET_CURRENT_SONG_INDEX',
-      setPlayMode: 'SET_PLAY_MODE'
+      setPlayMode: 'SET_PLAY_MODE',
+      showPlayMusic: 'SHOW_PLAY_MUSIC'
     }),
     changeMusicOrder(isNext) {
       let index = this.stateCurrentSongIndex
@@ -341,7 +351,11 @@ export default {
       } else {
         this.$refs.fullLyricScroll.scrollTo(0, 0, 1000)
       }
-    }
+    },
+    showSongListMini() {
+      this.isShowSongListMini = true
+    },
+    removeMusic(id, i) {}
   },
   watch: {
     songDetail(newVal, oldVal) {
@@ -453,15 +467,7 @@ export default {
         border-radius 50%
         overflow hidden
         border 10px solid rgba(255, 255, 255, 0.15)
-        &.rotate
-          animation rotate-disc 25s linear infinite
-        &.pause-rotate
-          animation-play-state paused
-        @keyframes rotate-disc
-          from
-            transform rotate(0)
-          to
-            transform rotate(360deg)
+        rotateDisc()
         img
           width 100%
           height 100%
@@ -558,6 +564,7 @@ export default {
   .disc-mini
     flex 0 0 40px
     margin 0 10px 0 20px
+    rotateDisc()
     .img
       width 100%
       border-radius 50%
@@ -570,23 +577,29 @@ export default {
     overflow hidden
     .name
       ellipsis()
-      margin-bottom: 2px
-      font-size: $font-size-medium
-      color: $color-text
+      margin-bottom 2px
+      font-size $font-size-medium
+      color $color-text
     .singer
       ellipsis()
-      font-size: $font-size-small
-      color: $color-text-d
+      font-size $font-size-small
+      color $color-text-d
   .progress-mini
     flex 0 0 30px
     margin-right 15px
+    margin-top 4px
     .iconfont
       color $color-theme-d
       font-weight 1000
   .song-list-btn-mini
     flex 0 0 30px
+    margin-right 20px
     .icon-playlist
       font-size 30px
       color $color-theme-d
-      margin-right 20px
+.song-list-mini
+  // height 200px
+  .van-popup
+    background-color $color-highlight-background
+    height 60%
 </style>

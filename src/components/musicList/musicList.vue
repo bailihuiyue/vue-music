@@ -3,7 +3,7 @@
     <div class="music-list">
         <img v-if="pic" v-lazy="pic" class="avatar">
         <div class="info-wrap">
-            <div class="title">{{singer}}</div>
+            <div class="title" v-if="singer">{{singer}}</div>
             <div class="text">{{name}}</div>
         </div>
     </div>
@@ -21,7 +21,7 @@ export default {
     },
     singer: {
       type: String,
-      required: true
+      required: false
     },
     name: {
       type: String,

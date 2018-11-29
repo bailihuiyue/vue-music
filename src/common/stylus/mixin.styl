@@ -37,8 +37,20 @@ ellipsis()
   text-overflow:ellipsis;
   white-space: nowrap;  
 
+//css3 全屏居中
 css3center()
   position fixed
   top 50%
   left 50%
   transform translate(-50%, -50%)
+
+rotateDisc()
+  &.rotate
+    animation rotate-disc 25s linear infinite
+  &.pause-rotate
+    animation-play-state paused
+  @keyframes rotate-disc
+    from
+      transform rotate(0)
+    to
+      transform rotate(360deg)  

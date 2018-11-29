@@ -83,9 +83,11 @@ export default {
   },
   mounted() {
     // 保证在DOM渲染完毕后初始化better-scroll
-    setTimeout(() => {
-      this._initScroll()
-    }, 20)
+    this.$nextTick(() => {
+      setTimeout(() => {
+        this._initScroll()
+      }, 20)
+    })
   },
   computed: {},
   methods: {
@@ -102,7 +104,7 @@ export default {
 
       // 是否派发滚动事件
       if (this.listenScroll) {
-        this.scroll.on('scroll', (pos) => {
+        this.scroll.on('scroll', pos => {
           this.$emit('scroll', pos)
         })
       }
@@ -111,7 +113,7 @@ export default {
       if (this.pullup) {
         this.scroll.on('scrollEnd', () => {
           // 滚动到底部
-          if (this.scroll.y <= (this.scroll.maxScrollY + 50)) {
+          if (this.scroll.y <= this.scroll.maxScrollY + 50) {
             this.$emit('scrollToEnd')
           }
         })
@@ -119,7 +121,7 @@ export default {
 
       // 是否派发顶部下拉事件，用于下拉刷新
       if (this.pulldown) {
-        this.scroll.on('touchend', (pos) => {
+        this.scroll.on('touchend', pos => {
           // 下拉动作
           if (pos.y > 50) {
             this.$emit('pulldown')
@@ -167,9 +169,8 @@ export default {
 </script>
 
 <style lang="less" scoped>
-  .b-scroll {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-  }
+.b-scroll {
+  width: 100%;
+  height: 100%;
+}
 </style>
