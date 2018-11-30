@@ -61,7 +61,7 @@
               <i class="icon-next i-right"></i>
             </div>
             <div class="icon-wrap" @click="toggleFavorite">
-              <i class="icon i-right" :class="toggleFavourite?'icon-favorite red':'icon-not-favorite'"></i>
+              <i class="icon i-right" :class="toggleFavourite?'icon-favorite':'icon-not-favorite'"></i>
             </div>
           </div>
         </div>
@@ -81,22 +81,39 @@
             <i class="iconfont i-middle" :class="isPaused?'iconfont-play-mini':'iconfont-pause-mini'"></i>
           </x-circle>
         </div>
-        <div class="song-list-btn-mini" @click.stop="showSongListMini">
+        <div class="song-list-btn-mini" @click.stop="controlSongListMini">
           <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
-    <div class="song-list-mini">
-      <van-popup v-model="isShowSongListMini" position="bottom">
-        <scroll :data="stateSongList">
-          <div class="song-list-min-scroll-wrap">
-            <div v-for="(l,i) in stateSongList" :key="i" @click.stop="removeMusic(l.id,i)" class="song-list-item">
-              <music-list :name="l.name"></music-list>
-            </div>
+      <popup v-model="isShowSongListMini" height="60%" position="bottom">
+        <div class="song-list-mini">
+          <div class="control-mini">
+              <div class="icon-play-mini" @click="playMode">
+                <i class="icon" :class="'icon-'+statePlayMode"></i>
+              </div>
+              <div class='state-play-mode-txt'>
+                {{statePlayMode | statePlayModeTxt}}
+              </div>
+              <div class="icon-clear-mini">
+                <i class="icon-clear"></i>
+              </div>
           </div>
-        </scroll>
-      </van-popup>
-    </div>
+            <scroll v-if="isShowSongListMini">
+              <div class="song-list-min-scroll-wrap">
+                <div v-for="(l,i) in stateSongList" :key="i" @click.stop="removeMusic(l.id,i)" class="song-list-item">
+                  <i class="icon-play"></i>
+                  <music-list :name="l.name"></music-list>
+                  <i class="fav-mini icon-favorite"></i>
+                  <i class="icon-delete"></i>
+                </div>
+              </div>
+          </scroll>
+          <play-all text="添加歌曲到队列" ico="icon-add"></play-all>
+          <!-- <div class="close-song-list-mini" @click="controlSongListMini">关闭</div> -->
+      </div>
+      <div class="close-song-list-mini" @click="controlSongListMini">关闭</div>
+    </popup>
   </div>
 </template>
 
@@ -107,8 +124,8 @@ import {
   getLyric
 } from '../api/song.js'
 import { mapState, mapMutations } from 'vuex'
-import { Row, Col, Slider, Popup } from 'vant'
-import { Swiper, SwiperItem, XCircle } from 'vux'
+import { Row, Col, Slider } from 'vant'
+import { Swiper, SwiperItem, XCircle, Popup } from 'vux'
 import Lyric from 'lyric-parser'
 import scroll from '../components/scroll/scroll'
 import {
@@ -119,6 +136,7 @@ import {
   getRandom
 } from '../common/js/utils.js'
 import musicList from '../components/musicList/musicList'
+import playAll from '../components/play-all/play-all'
 export default {
   components: {
     musicTitle,
@@ -129,8 +147,9 @@ export default {
     SwiperItem,
     scroll,
     XCircle,
-    [Popup.name]: Popup,
-    musicList
+    musicList,
+    Popup,
+    playAll
   },
   data() {
     return {
@@ -352,8 +371,8 @@ export default {
         this.$refs.fullLyricScroll.scrollTo(0, 0, 1000)
       }
     },
-    showSongListMini() {
-      this.isShowSongListMini = true
+    controlSongListMini() {
+      this.isShowSongListMini = !this.isShowSongListMini
     },
     removeMusic(id, i) {}
   },
@@ -392,6 +411,20 @@ export default {
       'statePlayMode',
       'stateShowPlayMusic'
     ])
+  },
+  filters: {
+    statePlayModeTxt: function(value) {
+      switch (value) {
+        case 'order':
+          return '顺序播放'
+        case 'random':
+          return '随机播放'
+        case 'loop':
+          return '单曲循环'
+        default:
+          return '数据紊乱^_^'
+      }
+    }
   },
   created() {
     // 如果store中没有歌曲数据,就通过ajax获取,
@@ -543,8 +576,6 @@ export default {
         text-align center
         flex 1
         line-height 35px
-        .icon-favorite.red
-          color $color-sub-theme
         .i-left, .i-right, .i-middle
           color $color-theme
           font-size $icon-font-other
@@ -597,9 +628,62 @@ export default {
     .icon-playlist
       font-size 30px
       color $color-theme-d
-.song-list-mini
-  // height 200px
-  .van-popup
-    background-color $color-highlight-background
-    height 60%
+.vux-popup-bottom
+  background-color $color-highlight-background
+  height 60%
+  display flex
+  flex-direction column
+  .song-list-mini
+    flex 1
+    height 100%
+    width 90%
+    margin 0 auto
+    display flex
+    flex-direction column
+    .control-mini
+      display:flex
+      align-items center
+      justify-content center
+      margin 20px 0 10px 0
+      .icon-play-mini
+        color $color-theme-d
+        font-size $icon-font-other
+        vertical-align middle
+        flex 0 0 40px
+      .state-play-mode-txt
+        color $color-text-l
+        flex 1
+      .icon-clear-mini
+        color $color-text-d
+        flex 0 0 20px
+    .b-scroll
+      flex 1
+      .song-list-min-scroll-wrap
+        .song-list-item
+          display flex
+          align-items center
+          padding-bottom 5px
+          .icon-play,.fav-mini,.icon-delete
+            font-size $font-size-small
+          .icon-play
+            color $color-theme-d
+          .music-list
+            flex 1
+          .fav-mini,.icon-delete
+            color $color-theme
+            margin-right 5px
+          .fav-mini
+            margin-right 10px
+          /deep/ .text
+            color $color-text-d !important
+            padding-bottom 0
+  .close-song-list-mini
+    flex 0 0 50px
+    width 100%
+    line-height 50px
+    background-color $color-background
+    text-align center
+    display flex
+    justify-content center
+    color $color-text-l
 </style>

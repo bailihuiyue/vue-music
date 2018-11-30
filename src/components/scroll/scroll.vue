@@ -168,9 +168,9 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
-.b-scroll {
-  width: 100%;
-  height: 100%;
-}
+<style scoped lang="stylus" rel="stylesheet/stylus">
+.b-scroll
+  width 100%
+  height 100%
+  overflow hidden
 </style>

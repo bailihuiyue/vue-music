@@ -1,8 +1,8 @@
 <!-- 用户中心全部播放按钮 -->
 <template>
   <div class="play-all" :class="gold?'gold':''">
-    <i class="icon-play"></i>
-    <span class="text">随机播放全部</span>
+    <i class="ico" :class="ico"></i>
+    <span class="text">{{text}}</span>
   </div>
 </template>
 
@@ -15,6 +15,14 @@ export default {
     gold: {
       type: Boolean,
       default: false
+    },
+    text: {
+      type: String,
+      default: '随机播放全部'
+    },
+    ico: {
+      type: String,
+      default: 'icon-play'
     }
   },
   components: {},
@@ -37,7 +45,7 @@ export default {
   margin 20px auto
   font-size 0
   text-align center
-  .icon-play
+  .ico
     vertical-align middle
     font-size $font-size-medium-x
     display inline-block
