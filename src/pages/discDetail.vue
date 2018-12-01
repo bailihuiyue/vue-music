@@ -1,6 +1,6 @@
 <!-- 歌单详情页 -->
 <template>
-  <transition name="left-slide">
+  <transition name="left-slide" mode="out-in">
     <div class="disc-detail-wrap">
       <div class="disc-detail">
         <div class="header">
@@ -155,11 +155,12 @@ export default {
 @import '~common/stylus/variable'
 @import '~common/stylus/mixin'
 .left-slide-enter-active, .left-slide-leave-active
-  transition all 0.3s
+  transition all .3s
 .left-slide-enter, .left-slide-leave-to
   transform translate3d(100%, 0, 0)
 .disc-detail-wrap
   full-page()
+  z-index 1
   .disc-detail
     full-page()
     .header

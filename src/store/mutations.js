@@ -15,5 +15,8 @@ export default {
   },
   [types.SET_PLAY_MODE](state, playMode) {
     state.statePlayMode = playMode
+  },
+  [types.EMPTY_SONG_LIST](state) {
+    state.stateSongList = []
   }
 }

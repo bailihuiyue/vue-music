@@ -95,16 +95,16 @@
               <div class='state-play-mode-txt'>
                 {{statePlayMode | statePlayModeTxt}}
               </div>
-              <div class="icon-clear-mini">
+              <div class="icon-clear-mini" @click.stop="removeSongList">
                 <i class="icon-clear"></i>
               </div>
           </div>
             <scroll v-if="isShowSongListMini">
               <div class="song-list-min-scroll-wrap">
                 <div v-for="(l,i) in stateSongList" :key="i" @click.stop="removeMusic(l.id,i)" class="song-list-item">
-                  <i class="icon-play"></i>
+                  <i class="icon-play" :style="l.id===songDetail.id?'':'opacity:0'"></i>
                   <music-list :name="l.name"></music-list>
-                  <i class="fav-mini icon-favorite"></i>
+                  <i class="fav-mini" @click="toggleFavorite(l)" :class="hasFavMin(l)?'icon-favorite':'icon-not-favorite'"></i>
                   <i class="icon-delete"></i>
                 </div>
               </div>
@@ -114,6 +114,7 @@
       </div>
       <div class="close-song-list-mini" @click="controlSongListMini">关闭</div>
     </popup>
+    <confirm :showConfirm="showConfirm" :hasCancelEvent="true" :hasConfirmEvent="true" confirmText="清空" txt="是否清空播放列表" @onConfirm="onConfirm" @onCancel="onCancel"></confirm>
   </div>
 </template>
 
@@ -137,6 +138,7 @@ import {
 } from '../common/js/utils.js'
 import musicList from '../components/musicList/musicList'
 import playAll from '../components/play-all/play-all'
+import confirm from '../components/confirm/confirm'
 export default {
   components: {
     musicTitle,
@@ -149,7 +151,8 @@ export default {
     XCircle,
     musicList,
     Popup,
-    playAll
+    playAll,
+    confirm
   },
   data() {
     return {
@@ -175,7 +178,8 @@ export default {
       canplayTriggered: false,
       // 歌词列表中可以看见的在中间的那个歌词
       middleLrc: 0,
-      isShowSongListMini: false
+      isShowSongListMini: false,
+      showConfirm: false
     }
   },
   methods: {
@@ -263,13 +267,20 @@ export default {
         self.next()
       }, 500)
     },
-    toggleFavorite() {
-      if (isInList(fav, this.songDetail)) {
-        removeFromStorage(fav, this.songDetail)
-        this.toggleFavourite = false
+    toggleFavorite(songDetail) {
+      debugger
+      let sd
+      if (songDetail) {
+        sd = songDetail
       } else {
-        addToStorage(fav, this.songDetail)
-        this.toggleFavourite = true
+        sd = this.songDetail
+      }
+      if (isInList(fav, sd)) {
+        removeFromStorage(fav, sd)
+        !songDetail && (this.toggleFavourite = false)
+      } else {
+        addToStorage(fav, sd)
+        !songDetail && (this.toggleFavourite = true)
       }
     },
     startSlide(e) {
@@ -295,7 +306,8 @@ export default {
     ...mapMutations({
       setCurrnetSongIndex: 'SET_CURRENT_SONG_INDEX',
       setPlayMode: 'SET_PLAY_MODE',
-      showPlayMusic: 'SHOW_PLAY_MUSIC'
+      showPlayMusic: 'SHOW_PLAY_MUSIC',
+      emptySongList: 'EMPTY_SONG_LIST'
     }),
     changeMusicOrder(isNext) {
       let index = this.stateCurrentSongIndex
@@ -374,7 +386,19 @@ export default {
     controlSongListMini() {
       this.isShowSongListMini = !this.isShowSongListMini
     },
-    removeMusic(id, i) {}
+    removeMusic(id, i) {},
+    removeSongList() {
+      this.showConfirm = true
+    },
+    onConfirm() {
+      this.emptySongList()
+    },
+    onCancel() {
+      this.showConfirm = false
+    },
+    hasFavMin(detail) {
+      return isInList(fav, detail)
+    }
   },
   watch: {
     songDetail(newVal, oldVal) {
@@ -411,6 +435,13 @@ export default {
       'statePlayMode',
       'stateShowPlayMusic'
     ])
+    // ,
+    // /TODO:learn:网上好多人说computed传不了参的,实际上用闭包是可以的
+    // hasFavMin() {
+    //   return function(detail) {
+    //     return isInList(fav, detail)
+    //   }
+    // }
   },
   filters: {
     statePlayModeTxt: function(value) {
@@ -592,6 +623,7 @@ export default {
   display flex
   align-items center
   justify-content center
+  z-index 3
   .disc-mini
     flex 0 0 40px
     margin 0 10px 0 20px
@@ -666,6 +698,7 @@ export default {
           .icon-play,.fav-mini,.icon-delete
             font-size $font-size-small
           .icon-play
+            margin-left 2px
             color $color-theme-d
           .music-list
             flex 1

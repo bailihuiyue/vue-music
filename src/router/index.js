@@ -13,15 +13,20 @@ export default new Router({
     {
       path: '/',
       name: 'index',
-      component: Recommend,
+      component: Recommend
       // TODO:learn:理论上不应该加/discDetail应该是discDetail,前面加/是一种简便写法
       // 参看网址:https://www.jianshu.com/p/6304fd09c515
-      children: [
-        {
-          path: 'discDetail/:id',
-          component: DiscDetail
-        }
-      ]
+      // children: [
+      //   {
+      //     path: 'discDetail/:id',
+      //     component: DiscDetail
+      //   }
+      // ]
+    },
+    {
+      path: '/discDetail/:id',
+      name: 'discDetail',
+      component: DiscDetail
     },
     {
       path: '/user',

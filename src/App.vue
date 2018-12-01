@@ -56,7 +56,7 @@ export default {
     //                                             20 * 2:上下的margin距离
     body.style.height = footerTop - bodyTop - 10 - 20 * 2 + 'px'
     playMusic.style.display = 'none'
-    playMusic.style.zIndex = '0'
+    playMusic.style.zIndex = '2'
   },
   computed: {
 
