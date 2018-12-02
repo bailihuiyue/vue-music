@@ -1,33 +1,78 @@
 <!-- 音乐播放页面 -->
 <template>
   <div class="player-wrapper">
-    <transition name="player" mode="in-out" @afterEnter="afterEnter">
-      <div class="play-music" v-show="stateShowPlayMusic">
-        <audio ref="audio" id="audio" @canplay="canplay" @ended="ended" @error="error" @timeupdate="timeupdate" :src="songDetail.url">123</audio>
+    <transition
+      name="player"
+      mode="in-out"
+      @afterEnter="afterEnter"
+    >
+      <div
+        class="play-music"
+        v-show="stateShowPlayMusic"
+      >
+        <audio
+          ref="audio"
+          id="audio"
+          @canplay="canplay"
+          @ended="ended"
+          @error="error"
+          @timeupdate="timeupdate"
+          :src="songDetail.url"
+        >123</audio>
         <div class="background">
-          <img class="background-img" :src="songDetail.pic">
+          <img
+            class="background-img"
+            :src="songDetail.pic"
+          >
         </div>
         <div class="header">
-          <music-title :title="songDetail.name" :singer="songDetail.singer" rotate="-90" :isShowPlayer="true"></music-title>
+          <music-title
+            :title="songDetail.name"
+            :singer="songDetail.singer"
+            rotate="-90"
+            :isShowPlayer="true"
+          ></music-title>
         </div>
-        <div class="body" ref="body">
-          <swiper dots-position="center" height="100%" :min-moving-distance="20">
+        <div
+          class="body"
+          ref="body"
+        >
+          <swiper
+            dots-position="center"
+            height="100%"
+            :min-moving-distance="20"
+          >
             <swiper-item>
-              <div class="disc rotate" :class="isPaused?'pause-rotate':''">
+              <div
+                class="disc rotate"
+                :class="isPaused?'pause-rotate':''"
+              >
                 <img :src="songDetail.pic">
               </div>
               <div class="lyric">{{currentLyric.txt}}</div>
             </swiper-item>
             <swiper-item>
               <scroll ref="fullLyricScroll">
-                <div class="full-lyric-wrap" ref="fullLyricWrap">
-                  <div class='txt' v-for="(lrc,index) in fullLyric" :key="index" :class="currentLyric.lineNum===index?'current':''" ref="lyricLine">{{lrc.txt}}</div>
+                <div
+                  class="full-lyric-wrap"
+                  ref="fullLyricWrap"
+                >
+                  <div
+                    class='txt'
+                    v-for="(lrc,index) in fullLyric"
+                    :key="index"
+                    :class="currentLyric.lineNum===index?'current':''"
+                    ref="lyricLine"
+                  >{{lrc.txt}}</div>
                 </div>
               </scroll>
             </swiper-item>
           </swiper>
         </div>
-        <div class="footer" ref='footer'>
+        <div
+          class="footer"
+          ref='footer'
+        >
           <div class="progress">
             <van-row>
               <van-col span="4">
@@ -39,82 +84,182 @@
                 <div class="passed-progress-line" ref="passedProgressLine" :style="{'width':passedProgressWidth+'px'}"></div>
                 <div class="progress-dot" ref="progressDot" :style="{'width': progressDotWidth + 'px', 'height': progressDotWidth + 'px','transform':'translate3d('+progressDotLeft+'px,0,0)'}"></div>
               </div> -->
-                <van-slider @touchstart.native="startSlide" @touchend.native="endSlide" @touchmove.native="moveSlide" v-model="sliderValue" @change="slideMusic" bar-height="5px" :step="0.01" />
+                <van-slider
+                  @touchstart.native="startSlide"
+                  @touchend.native="endSlide"
+                  @touchmove.native="moveSlide"
+                  v-model="sliderValue"
+                  @change="slideMusic"
+                  bar-height="5px"
+                  :step="0.01"
+                />
               </van-col>
               <van-col span="4">
                 <!-- left:leave的过去式,并不是左边的意思 -->
-                <div class="left-time" v-if="duration">{{format(duration)}}</div>
+                <div
+                  class="left-time"
+                  v-if="duration"
+                >{{format(duration)}}</div>
               </van-col>
             </van-row>
           </div>
           <div class="control-btns">
-            <div class="icon-wrap" @click="playMode">
-              <i class="icon i-left" :class="'icon-'+statePlayMode"></i>
+            <div
+              class="icon-wrap"
+              @click="playMode"
+            >
+              <i
+                class="icon i-left"
+                :class="'icon-'+statePlayMode"
+              ></i>
             </div>
-            <div class="icon-wrap" @click="prev">
+            <div
+              class="icon-wrap"
+              @click="prev"
+            >
               <i class="icon-prev i-left"></i>
             </div>
-            <div class="icon-wrap" @click="pause">
-              <i class="icon-pause i-middle" :class="isPaused?'icon-play':'icon-pause'"></i>
+            <div
+              class="icon-wrap"
+              @click="pause"
+            >
+              <i
+                class="icon-pause i-middle"
+                :class="isPaused?'icon-play':'icon-pause'"
+              ></i>
             </div>
-            <div class="icon-wrap" @click="next">
+            <div
+              class="icon-wrap"
+              @click="next"
+            >
               <i class="icon-next i-right"></i>
             </div>
-            <div class="icon-wrap" @click="toggleFavorite">
-              <i class="icon i-right" :class="toggleFavourite?'icon-favorite':'icon-not-favorite'"></i>
+            <div
+              class="icon-wrap"
+              @click="toggleFavorite"
+            >
+              <i
+                class="icon i-right"
+                :class="toggleFavourite?'icon-favorite':'icon-not-favorite'"
+              ></i>
             </div>
           </div>
         </div>
       </div>
     </transition>
     <transition name='mini'>
-      <div class="mini-player" v-show="stateShowPlayMusic!==null&&stateShowPlayMusic===false&&stateSongList.length>0" @click="showPlayMusic(true)">
-        <div class="disc-mini rotate" :class="isPaused?'pause-rotate':''">
-          <img class="img" :src="songDetail.pic">
+      <div
+        class="mini-player"
+        v-show="stateShowPlayMusic!==null&&stateShowPlayMusic===false&&stateSongList.length>0"
+        @click="showPlayMusic(true)"
+      >
+        <div
+          class="disc-mini rotate"
+          :class="isPaused?'pause-rotate':''"
+        >
+          <img
+            class="img"
+            :src="songDetail.pic"
+          >
         </div>
         <div class="song-info-min">
           <div class="name">{{songDetail.name}}</div>
           <div class="singer">{{songDetail.singer}}</div>
         </div>
         <div class="progress-mini">
-          <x-circle @click.native.stop="pause" :stroke-width="7" stroke-color="#ffcd32" :trail-width="7" trail-color="rgba(255, 205, 49, 0.5)" :percent="sliderValue">
-            <i class="iconfont i-middle" :class="isPaused?'iconfont-play-mini':'iconfont-pause-mini'"></i>
+          <x-circle
+            @click.native.stop="pause"
+            :stroke-width="7"
+            stroke-color="#ffcd32"
+            :trail-width="7"
+            trail-color="rgba(255, 205, 49, 0.5)"
+            :percent="sliderValue"
+          >
+            <i
+              class="iconfont i-middle"
+              :class="isPaused?'iconfont-play-mini':'iconfont-pause-mini'"
+            ></i>
           </x-circle>
         </div>
-        <div class="song-list-btn-mini" @click.stop="controlSongListMini">
+        <div
+          class="song-list-btn-mini"
+          @click.stop="controlSongListMini"
+        >
           <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
-      <popup v-model="isShowSongListMini" height="60%" position="bottom">
-        <div class="song-list-mini">
-          <div class="control-mini">
-              <div class="icon-play-mini" @click="playMode">
-                <i class="icon" :class="'icon-'+statePlayMode"></i>
-              </div>
-              <div class='state-play-mode-txt'>
-                {{statePlayMode | statePlayModeTxt}}
-              </div>
-              <div class="icon-clear-mini" @click.stop="removeSongList">
-                <i class="icon-clear"></i>
-              </div>
+    <popup
+      v-model="isShowSongListMini"
+      height="60%"
+      position="bottom"
+    >
+      <div class="song-list-mini">
+        <div class="control-mini">
+          <div
+            class="icon-play-mini"
+            @click="playMode"
+          >
+            <i
+              class="icon"
+              :class="'icon-'+statePlayMode"
+            ></i>
           </div>
-            <scroll v-if="isShowSongListMini">
-              <div class="song-list-min-scroll-wrap">
-                <div v-for="(l,i) in stateSongList" :key="i" @click.stop="removeMusic(l.id,i)" class="song-list-item">
-                  <i class="icon-play" :style="l.id===songDetail.id?'':'opacity:0'"></i>
-                  <music-list :name="l.name"></music-list>
-                  <i class="fav-mini" @click="toggleFavorite(l)" :class="hasFavMin(l)?'icon-favorite':'icon-not-favorite'"></i>
-                  <i class="icon-delete"></i>
-                </div>
-              </div>
-          </scroll>
-          <play-all text="添加歌曲到队列" ico="icon-add"></play-all>
-          <!-- <div class="close-song-list-mini" @click="controlSongListMini">关闭</div> -->
+          <div class='state-play-mode-txt'>
+            {{statePlayMode | statePlayModeTxt}}
+          </div>
+          <div
+            class="icon-clear-mini"
+            @click.stop="removeSongList"
+          >
+            <i class="icon-clear"></i>
+          </div>
+        </div>
+        <scroll v-if="isShowSongListMini">
+          <div class="song-list-min-scroll-wrap">
+            <div
+              v-for="(l,i) in stateSongList"
+              :key="i"
+              class="song-list-item"
+            >
+              <i
+                class="icon-play"
+                :style="l.id===songDetail.id?'':'opacity:0'"
+              ></i>
+              <music-list :name="l.name"></music-list>
+              <i
+                class="fav-mini"
+                @click="toggleFavorite(l)"
+                :ref="'mini'+l.id"
+                :class="hasFavMin(l)?'icon-favorite':'icon-not-favorite'"
+              ></i>
+              <i
+                class="icon-delete"
+                @click.stop="removeMusic(l,i)"
+              ></i>
+            </div>
+          </div>
+        </scroll>
+        <play-all
+          text="添加歌曲到队列"
+          ico="icon-add"
+        ></play-all>
+        <!-- <div class="close-song-list-mini" @click="controlSongListMini">关闭</div> -->
       </div>
-      <div class="close-song-list-mini" @click="controlSongListMini">关闭</div>
+      <div
+        class="close-song-list-mini"
+        @click="controlSongListMini"
+      >关闭</div>
     </popup>
-    <confirm :showConfirm="showConfirm" :hasCancelEvent="true" :hasConfirmEvent="true" confirmText="清空" txt="是否清空播放列表" @onConfirm="onConfirm" @onCancel="onCancel"></confirm>
+    <confirm
+      :showConfirm="showConfirm"
+      :hasCancelEvent="true"
+      :hasConfirmEvent="true"
+      :confirmText="confirmText"
+      :txt="confirmTip"
+      @onConfirm="onConfirm"
+      @onCancel="onCancel"
+    ></confirm>
   </div>
 </template>
 
@@ -179,7 +324,9 @@ export default {
       // 歌词列表中可以看见的在中间的那个歌词
       middleLrc: 0,
       isShowSongListMini: false,
-      showConfirm: false
+      showConfirm: false,
+      confirmText: '',
+      confirmTip: ''
     }
   },
   methods: {
@@ -268,20 +415,32 @@ export default {
       }, 500)
     },
     toggleFavorite(songDetail) {
-      debugger
-      let sd
-      if (songDetail) {
+      let sd, miniCls
+      if (songDetail.id) {
         sd = songDetail
+        miniCls = this.$refs['mini' + songDetail.id][0].classList
       } else {
         sd = this.songDetail
       }
       if (isInList(fav, sd)) {
         removeFromStorage(fav, sd)
-        !songDetail && (this.toggleFavourite = false)
+        // 修复迷你播放器和全屏播放器收藏按钮状态不同步的bug
+        // 如果有songDetail.id的值,说明是迷你播放器调用的,添加到收藏列表后更新收藏按钮状态
+        // 如果当前歌曲id和迷你播放器传过来的值一样,那么就同步一下状态
+        if (!songDetail.id || this.songDetail.id === songDetail.id) {
+          this.toggleFavourite = false
+        }
+        miniCls && miniCls.remove('icon-favorite')
+        miniCls && miniCls.add('icon-not-favorite')
       } else {
         addToStorage(fav, sd)
-        !songDetail && (this.toggleFavourite = true)
+        if (!songDetail.id || this.songDetail.id === songDetail.id) {
+          this.toggleFavourite = true
+        }
+        miniCls && miniCls.remove('icon-not-favorite')
+        miniCls && miniCls.add('icon-favorite')
       }
+      // 如果有songDetail变量说明是迷你播放器调用的,添加到收藏列表后更新收藏按钮状态
     },
     startSlide(e) {
       this.sliding = true
@@ -307,7 +466,8 @@ export default {
       setCurrnetSongIndex: 'SET_CURRENT_SONG_INDEX',
       setPlayMode: 'SET_PLAY_MODE',
       showPlayMusic: 'SHOW_PLAY_MUSIC',
-      emptySongList: 'EMPTY_SONG_LIST'
+      emptySongList: 'EMPTY_SONG_LIST',
+      setSongList: 'SET_SONG_LIST'
     }),
     changeMusicOrder(isNext) {
       let index = this.stateCurrentSongIndex
@@ -386,8 +546,27 @@ export default {
     controlSongListMini() {
       this.isShowSongListMini = !this.isShowSongListMini
     },
-    removeMusic(id, i) {},
+    removeMusic(item, i) {
+      let songListTmp = JSON.parse(JSON.stringify(this.stateSongList))
+      // let index = songListTmp.filter((val) => {
+      //   return val.id === item.id
+      // })
+      let index = -1
+      songListTmp.forEach((val, i) => {
+        if (val.id === item.id) {
+          index = i
+        }
+      })
+      if (index >= 0) {
+        songListTmp.splice(index, 1)
+        this.setSongList(songListTmp)
+        this.changeMusicIndex(0)
+      }
+      // TODO:bug:删除列表项目之后,列表长度未更新,导致随机放歌时可以有找不到的index
+    },
     removeSongList() {
+      this.confirmTip = '是否清空播放列表'
+      this.confirmText = '清空'
       this.showConfirm = true
     },
     onConfirm() {
@@ -673,7 +852,7 @@ export default {
     display flex
     flex-direction column
     .control-mini
-      display:flex
+      display flex
       align-items center
       justify-content center
       margin 20px 0 10px 0
@@ -695,14 +874,14 @@ export default {
           display flex
           align-items center
           padding-bottom 5px
-          .icon-play,.fav-mini,.icon-delete
+          .icon-play, .fav-mini, .icon-delete
             font-size $font-size-small
           .icon-play
             margin-left 2px
             color $color-theme-d
           .music-list
             flex 1
-          .fav-mini,.icon-delete
+          .fav-mini, .icon-delete
             color $color-theme
             margin-right 5px
           .fav-mini

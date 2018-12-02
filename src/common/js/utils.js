@@ -124,6 +124,16 @@ export function isObjExist(list, item) {
   return false
 }
 
+export function isArrExist(list, item) {
+  debugger
+  for (let l = 0, i = list.length; l < i; l++) {
+    if (list[l].id === item.id) {
+      return true
+    }
+  }
+  return false
+}
+
 // 获取收藏的歌曲,当type为history时表示听过的历史记录
 export function getFavourite(type) {
   return storage.get(type)
