@@ -201,7 +201,7 @@ export default {
       height 60%
       bottom 0
       .song-list
-        width 90%
+        width $container-width
         margin 0 auto
         padding 20px 0
 </style>

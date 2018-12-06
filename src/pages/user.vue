@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { Tab, Tabs, Row, Col } from 'vant'
+import { Row, Col } from 'vant'
 import { Tab as XTab, TabItem as XTabItem } from 'vux' // TODO:tip: 关键字as,使用as给组件取别名
 import playAll from '../components/play-all/play-all'
 import back from '../components/back/back.vue'
@@ -38,8 +38,6 @@ export default {
   },
 
   components: {
-    [Tab.name]: Tab,
-    [Tabs.name]: Tabs,
     [Row.name]: Row,
     [Col.name]: Col,
     playAll,
@@ -67,6 +65,7 @@ export default {
 </script>
 <style scoped lang="stylus" rel="stylesheet/stylus">
 @import '~common/stylus/variable'
+@import '~common/stylus/mixin'
 .user
   position absolute
   top 0
@@ -81,20 +80,5 @@ export default {
     transform translate3d(100%,0,0)
   /deep/ .van-row
     margin-top 10px
-    .vux-tab-container
-      height 30px
-      .vux-tab
-        height 30px
-      .vux-tab-item
-        border-color $color-highlight-background !important
-        background-color $color-background
-        border-right 1px solid $color-highlight-background
-        color $color-text-d
-        border none !important
-        background-size 0
-        line-height 30px
-        &.vux-tab-selected
-          background-color $color-highlight-background
-          color $color-text
-          border none
+    vuxTabStyle()
 </style>

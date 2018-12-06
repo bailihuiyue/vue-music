@@ -30,20 +30,17 @@ full-page(wrap=hidden)
   left 0
   overflow wrap
   background-color $color-background
-
 //超出部分显示省略号
 ellipsis()
   overflow: hidden;
   text-overflow:ellipsis;
   white-space: nowrap;  
-
 //css3 全屏居中
 css3center()
   position fixed
   top 50%
   left 50%
   transform translate(-50%, -50%)
-
 //旋转歌曲封面的动画
 rotateDisc()
   &.rotate
@@ -58,3 +55,22 @@ rotateDisc()
 
 red()
   color $color-sub-theme
+
+vuxTabStyle()
+  /deep/ .vux-tab-container
+    height 30px
+    border: 1px solid $color-highlight-background
+    .vux-tab
+      height 30px
+    .vux-tab-item
+      border-color $color-highlight-background !important
+      background-color $color-background
+      border-right 1px solid $color-highlight-background
+      color $color-text-d
+      border none !important
+      background-size 0
+      line-height 30px
+      &.vux-tab-selected
+        background-color $color-highlight-background
+        color $color-text
+        border none

@@ -241,6 +241,7 @@
           </div>
         </scroll>
         <play-all
+          @click.native="showAddSong"
           text="添加歌曲到队列"
           ico="icon-add"
         ></play-all>
@@ -260,6 +261,7 @@
       @onConfirm="onConfirm"
       @onCancel="onCancel"
     ></confirm>
+    <add-song v-if="stateShowAddSong" :isShowAddSong="true"></add-song>
   </div>
 </template>
 
@@ -277,13 +279,16 @@ import scroll from '../components/scroll/scroll'
 import {
   addToStorage,
   fav,
+  history,
   isInList,
   removeFromStorage,
-  getRandom
+  getRandom,
+  getSongsFromLocalStorage
 } from '../common/js/utils.js'
 import musicList from '../components/musicList/musicList'
 import playAll from '../components/play-all/play-all'
 import confirm from '../components/confirm/confirm'
+import addSong from '../components/add-song/add-song'
 export default {
   components: {
     musicTitle,
@@ -297,7 +302,8 @@ export default {
     musicList,
     Popup,
     playAll,
-    confirm
+    confirm,
+    addSong
   },
   data() {
     return {
@@ -344,6 +350,14 @@ export default {
         }
         this.canplayTriggered = true
       }
+
+      // 每次播放的歌曲都加到localStorage中
+      // 先删除一遍的目的是让最近听的始终在最前面
+      if (getSongsFromLocalStorage(history)) {
+        removeFromStorage(history, this.songDetail)
+      }
+      addToStorage(history, this.songDetail)
+      this.log(getSongsFromLocalStorage(history))
     },
     format(interval) {
       interval = interval | 0
@@ -433,6 +447,7 @@ export default {
         miniCls && miniCls.remove('icon-favorite')
         miniCls && miniCls.add('icon-not-favorite')
       } else {
+        debugger
         addToStorage(fav, sd)
         if (!songDetail.id || this.songDetail.id === songDetail.id) {
           this.toggleFavourite = true
@@ -467,7 +482,9 @@ export default {
       setPlayMode: 'SET_PLAY_MODE',
       showPlayMusic: 'SHOW_PLAY_MUSIC',
       emptySongList: 'EMPTY_SONG_LIST',
-      setSongList: 'SET_SONG_LIST'
+      setSongList: 'SET_SONG_LIST',
+      setSongHistory: 'SET_SONG_HISTORY',
+      showAddSongMutation: 'SHOW_ADD_SONG'
     }),
     changeMusicOrder(isNext) {
       let index = this.stateCurrentSongIndex
@@ -577,6 +594,9 @@ export default {
     },
     hasFavMin(detail) {
       return isInList(fav, detail)
+    },
+    showAddSong() {
+      this.showAddSongMutation(true)
     }
   },
   watch: {
@@ -612,7 +632,10 @@ export default {
       'stateSongList',
       'stateCurrentSongIndex',
       'statePlayMode',
-      'stateShowPlayMusic'
+      'stateShowPlayMusic',
+      'stateShowPlayMusic',
+      'stateSongHistory',
+      'stateShowAddSong'
     ])
     // ,
     // /TODO:learn:网上好多人说computed传不了参的,实际上用闭包是可以的
@@ -847,7 +870,7 @@ export default {
   .song-list-mini
     flex 1
     height 100%
-    width 90%
+    width $container-width
     margin 0 auto
     display flex
     flex-direction column

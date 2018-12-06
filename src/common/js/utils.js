@@ -108,7 +108,7 @@ export function addToStorage(type, item) {
 
 export function removeFromStorage(type, item) {
   let list = storage.get(type)
-  let index = list.findIndex(() => { return isObjExist(list, item) })
+  let index = isArrExist(list, item)
   if (index >= 0) {
     list.splice(index, 1)
     storage.set(type, list)
@@ -125,22 +125,24 @@ export function isObjExist(list, item) {
 }
 
 export function isArrExist(list, item) {
-  debugger
-  for (let l = 0, i = list.length; l < i; l++) {
-    if (list[l].id === item.id) {
-      return true
+  for (let i = 0, l = list.length; i < l; i++) {
+    if (list[i].id === item.id) {
+      return i
     }
   }
-  return false
+  return -1
 }
 
-// 获取收藏的歌曲,当type为history时表示听过的历史记录
-export function getFavourite(type) {
+// 获取收藏的歌曲,
+// type:history=听过的历史记录
+//      fav=收藏
+//      search=搜索历史
+export function getSongsFromLocalStorage(type) {
   return storage.get(type)
 }
 
 export function isInList(type, item) {
-  return isObjExist(getFavourite(type), item)
+  return isObjExist(getSongsFromLocalStorage(type), item)
 }
 
 export function getRandom(begin, end) {

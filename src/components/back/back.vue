@@ -1,7 +1,8 @@
 <!-- 返回按钮 -->
 <template>
     <div class="back" @click="back">
-        <i class="icon-back"></i>
+      <i v-if="isShowAddSong" class="icon-close"></i>
+      <i v-else class="icon-back"></i>
     </div>
 </template>
 
@@ -15,17 +16,24 @@ export default {
     isShowPlayer: {
       type: Boolean,
       default: false
+    },
+    isShowAddSong: {
+      type: Boolean,
+      default: false
     }
   },
   components: {},
 
   methods: {
     ...mapMutations({
-      showPlayMusic: 'SHOW_PLAY_MUSIC'
+      showPlayMusic: 'SHOW_PLAY_MUSIC',
+      showAddSong: 'SHOW_ADD_SONG'
     }),
     back() {
       if (this.isShowPlayer) {
         this.showPlayMusic(false)
+      } else if (this.isShowAddSong) {
+        this.showAddSong(false)
       } else {
         this.$router.back()
       }
@@ -40,7 +48,7 @@ export default {
 @import '~common/stylus/variable'
 .back
   text-align center
-  .icon-back
+  .icon-back,.icon-close
     height: 30px;
     line-height: 30px;
     display block

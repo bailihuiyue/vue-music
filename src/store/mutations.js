@@ -7,6 +7,9 @@ export default {
   [types.SET_SONG_LIST](state, songList) {
     state.stateSongList = songList
   },
+  [types.SET_SONG_HISTORY](state, songHistory) {
+    state.stateSongHistory = songHistory
+  },
   [types.SET_CURRENT_SONG_INDEX](state, currentSongIndex) {
     state.stateCurrentSongIndex = currentSongIndex
   },
@@ -18,5 +21,8 @@ export default {
   },
   [types.EMPTY_SONG_LIST](state) {
     state.stateSongList = []
+  },
+  [types.SHOW_ADD_SONG](state, showAddSong) {
+    state.stateShowAddSong = showAddSong
   }
 }
