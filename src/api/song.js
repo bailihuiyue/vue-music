@@ -13,3 +13,14 @@ export function getSongDetail(id) {
     id
   }, 'songDetail')
 }
+
+export function searchSong(name) {
+  const url = 'https://api.bzqll.com/music/tencent/search'
+
+  return getData(url, {
+    key,
+    s: name,
+    limit: 60,
+    type: 'song'
+  }, 'songDetail')
+}

@@ -94,6 +94,19 @@ export function preLoadImg(src, cb, vue) {
   image.src = src
 }
 
+export function debounce(func, delay) {
+  let timer
+
+  return function (...args) {
+    if (timer) {
+      clearTimeout(timer)
+    }
+    timer = setTimeout(() => {
+      func.apply(this, args)
+    }, delay)
+  }
+}
+
 export function addToStorage(type, item) {
   if (storage.has(type)) {
     let list = storage.get(type)
@@ -108,7 +121,7 @@ export function addToStorage(type, item) {
 
 export function removeFromStorage(type, item) {
   let list = storage.get(type)
-  let index = isArrExist(list, item)
+  let index = getItemIndex(list, item)
   if (index >= 0) {
     list.splice(index, 1)
     storage.set(type, list)
@@ -124,7 +137,7 @@ export function isObjExist(list, item) {
   return false
 }
 
-export function isArrExist(list, item) {
+export function getItemIndex(list, item) {
   for (let i = 0, l = list.length; i < l; i++) {
     if (list[i].id === item.id) {
       return i

@@ -17,18 +17,18 @@
           @ended="ended"
           @error="error"
           @timeupdate="timeupdate"
-          :src="songDetail.url"
-        >123</audio>
+          :src="stateSongDetail.url"
+        ></audio>
         <div class="background">
           <img
             class="background-img"
-            :src="songDetail.pic"
+            :src="stateSongDetail.pic"
           >
         </div>
         <div class="header">
           <music-title
-            :title="songDetail.name"
-            :singer="songDetail.singer"
+            :title="stateSongDetail.name"
+            :singer="stateSongDetail.singer"
             rotate="-90"
             :isShowPlayer="true"
           ></music-title>
@@ -47,7 +47,7 @@
                 class="disc rotate"
                 :class="isPaused?'pause-rotate':''"
               >
-                <img :src="songDetail.pic">
+                <img :src="stateSongDetail.pic">
               </div>
               <div class="lyric">{{currentLyric.txt}}</div>
             </swiper-item>
@@ -159,12 +159,12 @@
         >
           <img
             class="img"
-            :src="songDetail.pic"
+            :src="stateSongDetail.pic"
           >
         </div>
         <div class="song-info-min">
-          <div class="name">{{songDetail.name}}</div>
-          <div class="singer">{{songDetail.singer}}</div>
+          <div class="name">{{stateSongDetail.name}}</div>
+          <div class="singer">{{stateSongDetail.singer}}</div>
         </div>
         <div class="progress-mini">
           <x-circle
@@ -221,10 +221,11 @@
               v-for="(l,i) in stateSongList"
               :key="i"
               class="song-list-item"
+              @click="changeMusicIndex(i)"
             >
               <i
                 class="icon-play"
-                :style="l.id===songDetail.id?'':'opacity:0'"
+                :style="l.id===stateSongDetail.id?'':'opacity:0'"
               ></i>
               <music-list :name="l.name"></music-list>
               <i
@@ -261,7 +262,7 @@
       @onConfirm="onConfirm"
       @onCancel="onCancel"
     ></confirm>
-    <add-song v-if="stateShowAddSong" :isShowAddSong="true"></add-song>
+    <add-song v-if="stateShowAddSong" :isShowAddSong="true" @playSearchedMusic="changeMusicIndex"></add-song>
   </div>
 </template>
 
@@ -309,7 +310,7 @@ export default {
     return {
       title: '',
       background: {},
-      songDetail: {},
+      // songDetail: {},
       duration: '',
       audio: '',
       isPaused: false,
@@ -353,10 +354,12 @@ export default {
 
       // 每次播放的歌曲都加到localStorage中
       // 先删除一遍的目的是让最近听的始终在最前面
+
+      // todo:bug,state是否可以被这样循环
       if (getSongsFromLocalStorage(history)) {
-        removeFromStorage(history, this.songDetail)
+        removeFromStorage(history, this.stateSongDetail)
       }
-      addToStorage(history, this.songDetail)
+      addToStorage(history, this.stateSongDetail)
       this.log(getSongsFromLocalStorage(history))
     },
     format(interval) {
@@ -434,22 +437,21 @@ export default {
         sd = songDetail
         miniCls = this.$refs['mini' + songDetail.id][0].classList
       } else {
-        sd = this.songDetail
+        sd = this.stateSongDetail
       }
       if (isInList(fav, sd)) {
         removeFromStorage(fav, sd)
         // 修复迷你播放器和全屏播放器收藏按钮状态不同步的bug
         // 如果有songDetail.id的值,说明是迷你播放器调用的,添加到收藏列表后更新收藏按钮状态
         // 如果当前歌曲id和迷你播放器传过来的值一样,那么就同步一下状态
-        if (!songDetail.id || this.songDetail.id === songDetail.id) {
+        if (!songDetail.id || this.stateSongDetail.id === songDetail.id) {
           this.toggleFavourite = false
         }
         miniCls && miniCls.remove('icon-favorite')
         miniCls && miniCls.add('icon-not-favorite')
       } else {
-        debugger
         addToStorage(fav, sd)
-        if (!songDetail.id || this.songDetail.id === songDetail.id) {
+        if (!songDetail.id || this.stateSongDetail.id === songDetail.id) {
           this.toggleFavourite = true
         }
         miniCls && miniCls.remove('icon-not-favorite')
@@ -484,7 +486,8 @@ export default {
       emptySongList: 'EMPTY_SONG_LIST',
       setSongList: 'SET_SONG_LIST',
       setSongHistory: 'SET_SONG_HISTORY',
-      showAddSongMutation: 'SHOW_ADD_SONG'
+      showAddSongMutation: 'SHOW_ADD_SONG',
+      setSongDetail: 'SET_SONG_DETAIL'
     }),
     changeMusicOrder(isNext) {
       let index = this.stateCurrentSongIndex
@@ -521,7 +524,7 @@ export default {
       }
     },
     changeMusicIndex(index) {
-      this.songDetail = this.stateSongList[index]
+      this.setSongDetail(this.stateSongList[index])
       this.setCurrnetSongIndex(index)
       if (this.statePlayMode === 'loop') {
         this.audio.currentTime = 0
@@ -529,7 +532,7 @@ export default {
       }
     },
     getLrc() {
-      getLyric(this.songDetail.lrc).then(res => {
+      getLyric(this.stateSongDetail.lrc).then(res => {
         // 处理无歌词情况
         if (res !== '[00:00:00]此歌曲为没有填词的纯音乐，请您欣赏') {
           this.lyricParser = new Lyric(res, this.changeLrc)
@@ -600,7 +603,7 @@ export default {
     }
   },
   watch: {
-    songDetail(newVal, oldVal) {
+    stateSongDetail(newVal, oldVal) {
       // canplay方法只在歌曲可以播放时执行一次,但是设置canplayTriggered的速度比较快,
       // 在歌曲缓冲和歌词加载前就已经设置完成,所以在canplay执行时里面的方法就可以执行了
       this.canplayTriggered = false
@@ -612,19 +615,20 @@ export default {
         this.getLrc()
       }
 
-      if (isInList(fav, this.songDetail)) {
+      if (isInList(fav, this.stateSongDetail)) {
         this.toggleFavourite = true
         // this.log(isInList(fav, this.stateSongDetail), true)
       } else {
         this.toggleFavourite = false
         // this.log(isInList(fav, this.stateSongDetail), false)
       }
-    },
-    stateShowPlayMusic(newVal, oldVal) {
-      if (this.stateShowPlayMusic) {
-        this.songDetail = this.stateSongDetail.pic ? this.stateSongDetail : ''
-      }
     }
+    // ,
+    // stateShowPlayMusic(newVal, oldVal) {
+    //   if (this.stateShowPlayMusic) {
+    //     this.songDetail = this.stateSongDetail.pic ? this.stateSongDetail : ''
+    //   }
+    // }
   },
   computed: {
     ...mapState([
@@ -632,7 +636,6 @@ export default {
       'stateSongList',
       'stateCurrentSongIndex',
       'statePlayMode',
-      'stateShowPlayMusic',
       'stateShowPlayMusic',
       'stateSongHistory',
       'stateShowAddSong'

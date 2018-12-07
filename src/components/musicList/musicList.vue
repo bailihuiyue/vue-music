@@ -2,9 +2,10 @@
 <template>
     <div class="music-list">
         <img v-if="pic" v-lazy="pic" class="avatar">
+        <i v-if="icon" :class="icon" class="icon"></i>
         <div class="info-wrap">
-            <div class="title" v-if="singer">{{singer}}</div>
-            <div class="text">{{name}}</div>
+            <div class="singer" v-if="singer">{{singer}}</div>
+            <div class="name" :class="searchSongStyle?'search-song-style':''">{{name}}</div>
         </div>
     </div>
 </template>
@@ -15,6 +16,11 @@ export default {
     return {}
   },
   props: {
+    icon: {
+      type: String,
+      required: false,
+      default: null
+    },
     pic: {
       type: String,
       required: false
@@ -26,6 +32,11 @@ export default {
     name: {
       type: String,
       required: true
+    },
+    searchSongStyle: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   components: {},
@@ -47,15 +58,21 @@ export default {
         margin-right 15px
         display inline-block
         vertical-align middle
+    .icon
+        color $color-text-d
+        margin-right 15px
     .info-wrap
         display inline-block
         vertical-align middle
-        .title
+        .singer
             color $color-text
             font-size $font-size-small
             margin-bottom 5px
-        .text
+        .name
             color $color-text-l
             font-size $font-size-small-s
             padding-bottom 5px
+        .search-song-style
+            font-size $font-size-medium
+            color $color-text-d
 </style>
