@@ -71,7 +71,7 @@ export default {
         .name
             color $color-text-l
             font-size $font-size-small-s
-            padding-bottom 5px
+            // padding-bottom 5px
         .search-song-style
             font-size $font-size-medium
             color $color-text-d

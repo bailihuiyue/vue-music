@@ -35,8 +35,8 @@ get√
 
 问题:
     vue声明周期
-    conputed,watch区别
-
+    conputed,filter,watch区别
+    vue懒加载,那么不懒加载的是什么情况?所有DOM一次性都被生成完了?那么mounted钩子函数还有什么意义
 
 
 1.util.js return axios 为什么要return

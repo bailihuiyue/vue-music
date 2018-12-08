@@ -1,7 +1,7 @@
 <!-- 歌单详情页 -->
 <template>
-  <transition name="left-slide" mode="out-in">
-    <div class="disc-detail-wrap">
+  <transition name="left-slide" mode="in-out" @before-enter="beforeEnter" @:after-enter="refreshScroll">
+    <div class="disc-detail-wrap" :class="isMiniPlayShow?'showMiniPlayer':''">
       <div class="disc-detail">
         <div class="header">
           <music-title :title="data.title"></music-title>
@@ -17,13 +17,13 @@
           </div>
         </div>
         <div class="bg-layer" ref="layer"></div>
-        <div class="song-list-wrap" v-show="songs.length>0" ref="BScroll">
+        <scroll style="overflow:initial" class="song-list-wrap" v-show="songs.length>0" ref="BScroll" :probeType="3" :listenScroll="true" @scroll="onScroll">
           <div class="song-list">
             <div v-for="(l,i) in songs" :key="i" @click="playMusic(l.id,i)" class="song-list-item">
               <music-list :singer="l.singer" :name="l.name"></music-list>
             </div>
           </div>
-        </div>
+        </scroll>
       </div>
       <router-view></router-view>
     </div>
@@ -35,10 +35,10 @@ import { getSongList } from '../api/recommend.js'
 import musicTitle from '../components/musicTitle/musicTitle'
 import playAll from '../components/play-all/play-all.vue'
 import musicList from '../components/musicList/musicList'
-import BScroll from 'better-scroll'
+import scroll from '../components/scroll/scroll.vue'
 import { prefixStyle, preLoadImg } from '../common/js/utils.js'
 import { getSongDetail } from '../api/song.js'
-import { mapMutations } from 'vuex'
+import { mapMutations, mapGetters } from 'vuex'
 const transform = prefixStyle('transform')
 const RESERVED_HEIGHT = 40
 export default {
@@ -56,7 +56,7 @@ export default {
     musicTitle,
     playAll,
     musicList,
-    BScroll
+    scroll
   },
 
   methods: {
@@ -82,41 +82,54 @@ export default {
       setSongList: 'SET_SONG_LIST',
       setCurrnetSongIndex: 'SET_CURRENT_SONG_INDEX',
       showPlayMusic: 'SHOW_PLAY_MUSIC'
-    })
+    }),
+    beforeEnter() {
+      // 由于路由使用了keep-alive,因此页面数据只初始化一次,调用beforeEnter则可以每次触发
+      let discid = this.$route.params.id
+      getSongList(discid)
+        .then(res => {
+          this.data = res.data
+          this.songs = res.data.songs
+          this.setSongList(res.data.songs)
+          this.bg = { background: `url(${res.data.logo})` }
+        })
+        .catch(err => {
+          console.log('getSongList:', err)
+        })
+    },
+    refreshScroll() {
+      this.$refs.BScroll.refresh()
+    }
   },
 
-  computed: {},
+  computed: {
+    ...mapGetters([
+      'isMiniPlayShow'
+    ])
+  },
   created() {
-    let discid = this.$route.params.id
-    getSongList(discid)
-      .then(res => {
-        this.data = res.data
-        this.songs = res.data.songs
-        this.setSongList(res.data.songs)
-        this.bg = { background: `url(${res.data.logo})` }
-      })
-      .catch(err => {
-        console.log('getSongList:', err)
-      })
+    // 用于通过链接分享歌单
+    this.beforeEnter()
   },
   mounted() {
     this.imageHeight = this.$refs.bgImg.clientHeight
     this.minTransalteY = -(this.imageHeight - RESERVED_HEIGHT)
     // this.$refs.BScroll.style.top = `${this.imageHeight}px`
-    let self = this
-    this.$nextTick(() => {
-      setTimeout(() => {
-        /* eslint-disable no-new */
-        self.scroll = new BScroll(this.$refs.BScroll, {
-          probeType: 3,
-          bounce: {
-            top: true,
-            bottom: true
-          }
-        })
-        self.scroll.on('scroll', this.onScroll)
-      }, 10)
-    })
+    // let self = this
+    // TODO:todo:srcoll组件已封装好,现在可以将下面代码改为插件
+    // this.$nextTick(() => {
+    //   setTimeout(() => {
+    //     /* eslint-disable no-new */
+    //     self.scroll = new BScroll(this.$refs.BScroll, {
+    //       probeType: 3,
+    //       bounce: {
+    //         top: true,
+    //         bottom: true
+    //       }
+    //     })
+    //     self.scroll.on('scroll', this.onScroll)
+    //   }, 10)
+    // })
   },
   watch: {
     scrollY(newVal) {
@@ -147,6 +160,12 @@ export default {
         this.$refs.bgImg.style.height = '40%'
         this.$refs.playAll.style.display = ''
       }
+    },
+    isMiniPlayShow() {
+      if (this.isMiniPlayShow) {
+        debugger
+        this.$refs.BScroll.refresh()
+      }
     }
   }
 }
@@ -155,7 +174,7 @@ export default {
 @import '~common/stylus/variable'
 @import '~common/stylus/mixin'
 .left-slide-enter-active, .left-slide-leave-active
-  transition all .3s
+  transition all 3s
 .left-slide-enter, .left-slide-leave-to
   transform translate3d(100%, 0, 0)
 .disc-detail-wrap
@@ -204,4 +223,6 @@ export default {
         width $container-width
         margin 0 auto
         padding 20px 0
+.showMiniPlayer
+  bottom $miniPlayerHeight
 </style>

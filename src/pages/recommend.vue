@@ -1,13 +1,16 @@
 <!-- 推荐页面 -->
 <template>
-  <div>
-    <swipe></swipe>
-    <disc-list></disc-list>
-    <router-view></router-view>
-  </div>
+  <scroll style="overflow:initial">
+    <div class="recommend">
+      <swipe></swipe>
+      <disc-list></disc-list>
+      <router-view></router-view>
+    </div>
+  </scroll>
 </template>
 
 <script>
+import scroll from '../components/scroll/scroll.vue'
 import swipe from '../components/swipe/swipe.vue'
 import discList from '../components/discList/discList.vue'
 export default {
@@ -18,7 +21,8 @@ export default {
 
   components: {
     swipe,
-    discList
+    discList,
+    scroll
   },
 
   methods: {},
@@ -29,6 +33,6 @@ export default {
 }
 
 </script>
-<style scoped>
+<style scoped lang="stylus" rel="stylesheet/stylus">
 
 </style>

@@ -1,6 +1,6 @@
 <!-- 音乐播放页面 -->
 <template>
-  <div class="player-wrapper">
+  <div class="play-music-wrapper" :class="isMiniPlayShow?'activeFlex':''">
     <transition
       name="player"
       mode="in-out"
@@ -150,7 +150,7 @@
     <transition name='mini'>
       <div
         class="mini-player"
-        v-show="stateShowPlayMusic!==null&&stateShowPlayMusic===false&&stateSongList.length>0"
+        v-show="isMiniPlayShow"
         @click="showPlayMusic(true)"
       >
         <div
@@ -272,7 +272,7 @@ import {
   /* getSongDetail, */
   getLyric
 } from '../api/song.js'
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations, mapGetters } from 'vuex'
 import { Row, Col, Slider } from 'vant'
 import { Swiper, SwiperItem, XCircle, Popup } from 'vux'
 import Lyric from 'lyric-parser'
@@ -546,11 +546,17 @@ export default {
 
         // 计算,让正在唱的歌词总是在最中间高亮
         this.$nextTick(() => {
-          let wrapHeight = this.$refs.fullLyricWrap.clientHeight
           let number = this.fullLyric.length
-          let bodyHeight = this.$refs.body.clientHeight
-          let visiblelyrics = Math.floor((bodyHeight / wrapHeight) * number)
-          this.middleLrc = Math.round(visiblelyrics / 2)
+          if (number !== 1) {
+            let wrapHeight = this.$refs.fullLyricWrap.clientHeight
+            let bodyHeight = this.$refs.body.clientHeight
+            let visiblelyrics = Math.floor((bodyHeight / wrapHeight) * number)
+            this.middleLrc = Math.round(visiblelyrics / 2)
+            this.$refs.fullLyricScroll.$el.style.paddingTop = '0'
+          } else {
+            // 没有歌词时让提示居中
+            this.$refs.fullLyricScroll.$el.style.paddingTop = '50%'
+          }
         })
       })
     },
@@ -639,6 +645,9 @@ export default {
       'stateShowPlayMusic',
       'stateSongHistory',
       'stateShowAddSong'
+    ]),
+    ...mapGetters([
+      'isMiniPlayShow'
     ])
     // ,
     // /TODO:learn:网上好多人说computed传不了参的,实际上用闭包是可以的
@@ -685,6 +694,9 @@ export default {
 <style scoped lang="stylus" rel="stylesheet/stylus">
 @import '~common/stylus/variable'
 @import '~common/stylus/mixin'
+//activeFlex 解决了当迷你播放器出现时遮挡住屏幕底部的问题
+.activeFlex
+  flex 0 0 $miniPlayerHeight
 .play-music
   full-page()
   &.player-enter-active, &.player-leave-active
@@ -716,7 +728,7 @@ export default {
       width 100%
       height 100%
   .body
-    padding 20px 0
+    margin 20px 0
     .vux-slider
       height 100%
       overflow initial
@@ -775,26 +787,6 @@ export default {
               background $color-theme
               width 12px
               height 12px
-      // .progress-line, .passed-progress-line
-      // width 100%
-      // height 5px
-      // background-color $color-background
-      // opacity 0.2
-      // vertical-align middle
-      // border-radius 100px
-      // position relative
-      // .passed-progress-line
-      // background-color $color-theme
-      // opacity 1
-      // position relative
-      // .progress-line
-      // top 5px
-      // .progress-dot
-      // border 3px solid $color-text
-      // border-radius 50%
-      // background $color-theme
-      // position relative
-      // top -11px
       .passed-time, .left-time, .music-progress-bar-wrap
         height $font-size-medium
         line-height $font-size-medium
@@ -820,7 +812,7 @@ export default {
           font-size $icon-font-middle
 .mini-player
   width 100%
-  height 60px
+  height $miniPlayerHeight
   position fixed
   left 0
   bottom 0

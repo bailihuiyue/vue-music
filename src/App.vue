@@ -1,15 +1,26 @@
 <template>
   <div id="app">
-    <m-header></m-header>
-    <tab prevent-default v-model="tabIndex" selected @on-before-index-change="switchTabItem" active-color="#ffcd32" custom-bar-width="35px">
-      <tab-item>推荐</tab-item>
-      <tab-item>歌手</tab-item>
-      <tab-item>排行</tab-item>
-      <tab-item>搜索</tab-item>
-    </tab>
-    <keep-alive>
-      <router-view></router-view>
-    </keep-alive>
+    <div class="main-header">
+      <m-header></m-header>
+      <tab
+        prevent-default
+        v-model="tabIndex"
+        selected
+        @on-before-index-change="switchTabItem"
+        active-color="#ffcd32"
+        custom-bar-width="35px"
+      >
+        <tab-item>推荐</tab-item>
+        <tab-item>歌手</tab-item>
+        <tab-item>排行</tab-item>
+        <tab-item>搜索</tab-item>
+      </tab>
+    </div>
+    <div class="main-body">
+      <keep-alive>
+          <router-view></router-view>
+      </keep-alive>
+    </div>
     <play-music ref="playMusic"></play-music>
   </div>
 </template>
@@ -45,7 +56,9 @@ export default {
   mounted() {
     // debugger
     // 预加载计算playMusic组件中body的高度
-    let playMusic = this.$refs.playMusic.$el.getElementsByClassName('play-music')[0]
+    let playMusic = this.$refs.playMusic.$el.getElementsByClassName(
+      'play-music'
+    )[0]
     let body = this.$refs.playMusic.$el.getElementsByClassName('body')[0]
     let footer = this.$refs.playMusic.$el.getElementsByClassName('footer')[0]
 
@@ -58,16 +71,25 @@ export default {
     playMusic.style.display = 'none'
     playMusic.style.zIndex = '2'
   },
-  computed: {
-
-  }
+  computed: {}
 }
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
 @import '~common/stylus/variable'
-/deep/ .vux-tab
-  background-color transparent
-  .vux-tab-item
-    background none
+#app
+  display flex
+  flex-direction column
+  width 100%
+  height 100%
+  .main-header
+    /deep/ .vux-tab
+      background-color: transparent
+      .vux-tab-item
+        background: none
+  .main-body
+    flex 1
+    overflow hidden
+  .play-music
+    flex 0 0 $miniPlayerHeight
 </style>
