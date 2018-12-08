@@ -215,7 +215,7 @@
             <i class="icon-clear"></i>
           </div>
         </div>
-        <scroll v-if="isShowSongListMini">
+        <scroll v-if="isShowSongListMini" style="overflow:hidden">
           <div class="song-list-min-scroll-wrap">
             <div
               v-for="(l,i) in stateSongList"

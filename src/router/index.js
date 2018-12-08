@@ -5,6 +5,7 @@ import Router from 'vue-router'
 import User from '../pages/user.vue'
 import Recommend from '../pages/recommend.vue'
 import DiscDetail from '../pages/discDetail.vue'
+import Singers from '../pages/singers.vue'
 Vue.use(Router)
 
 export default new Router({
@@ -13,11 +14,10 @@ export default new Router({
     {
       path: '/',
       name: 'index',
-      component: Recommend
-      // ,
-      // meta: {
-      //   keepAlive: true
-      // }
+      component: Recommend,
+      meta: {
+        keepAlive: true
+      }
       // TODO:learn:理论上不应该加/discDetail应该是discDetail,前面加/是一种简便写法
       // 参看网址:https://www.jianshu.com/p/6304fd09c515
       // children: [
@@ -30,20 +30,26 @@ export default new Router({
     {
       path: '/discDetail/:id',
       name: 'discDetail',
-      component: DiscDetail
-      // ,
-      // meta: {
-      //   keepAlive: false
-      // }
+      component: DiscDetail,
+      meta: {
+        keepAlive: false
+      }
+    },
+    {
+      path: '/singers',
+      name: 'singers',
+      component: Singers,
+      meta: {
+        keepAlive: true
+      }
     },
     {
       path: '/user',
       name: 'user',
-      component: User
-      // ,
-      // meta: {
-      //   keepAlive: true
-      // }
+      component: User,
+      meta: {
+        keepAlive: true
+      }
     }
   ]
 })

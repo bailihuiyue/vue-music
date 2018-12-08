@@ -1,7 +1,8 @@
 <!-- 歌单详情页 -->
 <template>
-  <transition name="left-slide" mode="in-out" @before-enter="beforeEnter" @:after-enter="refreshScroll">
-    <div class="disc-detail-wrap" :class="isMiniPlayShow?'showMiniPlayer':''">
+  <!--  @after-enter="refreshScroll" -->
+  <transition name="left-slide">
+    <div class="disc-detail-wrap">
       <div class="disc-detail">
         <div class="header">
           <music-title :title="data.title"></music-title>
@@ -17,7 +18,7 @@
           </div>
         </div>
         <div class="bg-layer" ref="layer"></div>
-        <scroll style="overflow:initial" class="song-list-wrap" v-show="songs.length>0" ref="BScroll" :probeType="3" :listenScroll="true" @scroll="onScroll">
+        <scroll class="song-list-wrap" ref="BScroll" :probeType="3" :listenScroll="true" @scroll="onScroll" :class="isMiniPlayShow?'showMiniPlayer':''">
           <div class="song-list">
             <div v-for="(l,i) in songs" :key="i" @click="playMusic(l.id,i)" class="song-list-item">
               <music-list :singer="l.singer" :name="l.name"></music-list>
@@ -25,7 +26,6 @@
           </div>
         </scroll>
       </div>
-      <router-view></router-view>
     </div>
   </transition>
 </template>
@@ -44,7 +44,7 @@ const RESERVED_HEIGHT = 40
 export default {
   data() {
     return {
-      data: Object,
+      data: '',
       bg: '',
       songs: [],
       scroll: Object,
@@ -163,8 +163,9 @@ export default {
     },
     isMiniPlayShow() {
       if (this.isMiniPlayShow) {
-        debugger
-        this.$refs.BScroll.refresh()
+        this.$nextTick(() => {
+          this.$refs.BScroll.refresh()
+        })
       }
     }
   }
@@ -173,13 +174,13 @@ export default {
 <style scoped lang="stylus" rel="stylesheet/stylus">
 @import '~common/stylus/variable'
 @import '~common/stylus/mixin'
-.left-slide-enter-active, .left-slide-leave-active
-  transition all 3s
-.left-slide-enter, .left-slide-leave-to
-  transform translate3d(100%, 0, 0)
 .disc-detail-wrap
   full-page()
   z-index 1
+  &.left-slide-enter-active, &.left-slide-leave-active
+    transition all .3s
+  &.left-slide-enter, &.left-slide-leave-to
+    transform translate3d(100%, 0, 0)
   .disc-detail
     full-page()
     .header
@@ -224,5 +225,6 @@ export default {
         margin 0 auto
         padding 20px 0
 .showMiniPlayer
-  bottom $miniPlayerHeight
+  bottom 10% !important
+  height 50% !important
 </style>

@@ -17,9 +17,13 @@
       </tab>
     </div>
     <div class="main-body">
+      <!-- TODO:learn:处理有些不需要被缓存的页面的方法 -->
       <keep-alive>
-          <router-view></router-view>
+          <router-view v-if="$route.meta.keepAlive"></router-view>
       </keep-alive>
+      <router-view v-if="!$route.meta.keepAlive">
+          <!-- discDetial页面不需要被缓存 -->
+      </router-view>
     </div>
     <play-music ref="playMusic"></play-music>
   </div>
@@ -46,6 +50,14 @@ export default {
   methods: {
     switchTabItem(index) {
       console.log('on-before-index-change', index)
+      switch (index) {
+        case 0:
+          this.$router.push('/')
+          break
+        case 1:
+          this.$router.push('/singers')
+          break
+      }
       this.$vux.loading.show()
       setTimeout(() => {
         this.$vux.loading.hide()
