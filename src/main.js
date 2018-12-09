@@ -9,7 +9,7 @@ import { LoadingPlugin } from 'vux'
 import { Toast } from 'vant'
 import store from './store'
 import 'common/stylus/index.styl'
-
+import 'swiper/dist/css/swiper.css'
 Vue.config.productionTip = false
 
 fastclick.attach(document.body)

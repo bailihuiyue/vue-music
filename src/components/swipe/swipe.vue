@@ -2,31 +2,48 @@
 <template>
   <!-- TODO:bug:更换vux轮播图后仍然会导致keep-alive失效,原因未知 -->
   <div>
-    <swiper auto class="text-scroll" dots-position="center" dots-class="dot" :aspect-ratio="0.4">
-      <swiper-item v-for="(s, i) in slider" :key="i">
-        <!-- <a :href="s.linkUrl"> TODO:todo:该链接点击跳转到qq音乐页面,目前未抓获该接口信息,因此轮播图不跳转,待后期完善
-          <img v-lazy="s.picUrl" />
-        </a> -->
+    <swiper
+      ref="mySwiper"
+      :options="swiperOption"
+      v-if="slider.length"
+    >
+      <!-- 这部分放你要渲染的那些内容 -->
+      <swiper-slide v-for="(s,index) in slider" :key="index">
         <img :src="s.picUrl" style="width:100%"/>
-      </swiper-item>
+      </swiper-slide>
+      <div class="swiper-pagination" slot="pagination"></div>
     </swiper>
   </div>
 </template>
 <script>
-import { Swiper, SwiperItem } from 'vux'
-import {getRecommend} from '../../api/recommend.js'
+import { swiper, swiperSlide } from 'vue-awesome-swiper'
+import { getRecommend } from '../../api/recommend.js'
 export default {
   data() {
     return {
-      slider: []
+      slider: [],
+      swiperOption: {
+        autoplay: {
+          disableOnInteraction: false
+        },
+        speed: 1000,
+        slidesPerView: 1,
+        loop: true,
+        observer: true,
+        observeParents: true,
+        pagination: {
+          el: '.swiper-pagination',
+          clickable: true
+        }
+      }
     }
   },
   components: {
-    Swiper,
-    SwiperItem
+    swiper,
+    swiperSlide
   },
-
-  methods: {},
+  methods: {
+  },
 
   computed: {},
   created() {
@@ -38,18 +55,28 @@ export default {
       }
     })
   },
-  mounted() {}
+  mounted() {},
+  activated() {
+    if (this.$refs.mySwiper) {
+      this.$refs.mySwiper.swiper.autoplay.start()
+    }
+  },
+  deactivated() {
+    this.$refs.mySwiper.swiper.autoplay.stop()
+  }
 }
 </script>
 <style scoped lang="stylus" rel="stylesheet/stylus">
 @import '~common/stylus/variable'
-/deep/ .vux-icon-dot
-  margin 0 4px
-  width 8px !important
-  height 8px !important
-  background $color-text-l !important
-  &.active
-    width 20px !important
-    border-radius 5px !important
-    background $color-text-ll !important
+/deep/ .swiper-pagination-bullet
+  margin: 0 4px
+  width: 8px
+  height: 8px
+  background: $color-text-ll
+  opacity 0.7
+  &.swiper-pagination-bullet-active
+    width: 20px
+    border-radius: 5px
+    background: $color-text-ll
+    opacity 1
 </style>

@@ -6,13 +6,13 @@
             热门歌单推荐
         </div>
         <div class="song-list-wrap" v-if="list.length>0">
-            <router-link v-for="(l,i) in list" :key="i" :to="'discDetail/'+l.id" class="song-list-item">
+            <div v-for="(l,i) in list" :key="i"  @click="toDiscDetail(l.id)" class="song-list-item">
                 <img v-lazy="l.pic" class="avatar">
                 <div class="info-wrap">
                     <div class="title">{{l.creator}}</div>
                     <div class="text">{{l.name}}</div>
                 </div>
-            </router-link>
+            </div>
         </div>
     </div>
     <!-- </van-pull-refresh> -->
@@ -39,6 +39,9 @@ export default {
         this.$toast('刷新成功')
         this.isLoading = false
       }, 500)
+    },
+    toDiscDetail(id) {
+      this.$router.push('/discDetail/' + id)
     }
   },
 
