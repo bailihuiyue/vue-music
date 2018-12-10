@@ -1,13 +1,13 @@
 <!-- 搜素结果显示页面 -->
 <template>
   <div class="serach-result">
-    <scroll :data="songList">
+    <scroll :data="songList" >
       <div class="scroll-wrap" v-if="songList.length>0">
         <div
           v-for="song in songList"
           :key=song.id
         >
-          <music-list :name="song.name" icon="icon-music" :searchSongStyle="true" @click.stop.native="addSong(song)"></music-list>
+          <music-list :searchSongStyle="true" :name="song.name" :singer="song.singer" icon="icon-music" @click.stop.native="addSong(song)"></music-list>
         </div>
       </div>
       <div v-else class="else">没有搜索到相关内容</div>
@@ -20,15 +20,17 @@
 import musicList from '../musicList/musicList'
 import scroll from '../scroll/scroll'
 import notify from '../notify/notify'
-import { getItemIndex } from '../../common/js/utils.js'
+import { getItemIndex, addToStorage, searchHistory } from '../../common/js/utils.js'
 import { mapState, mapMutations } from 'vuex'
 export default {
   data() {
     return {}
   },
   props: {
-    songList: Array,
-    required: true
+    songList: {
+      type: Array,
+      required: true
+    }
   },
   components: {
     musicList,
@@ -44,6 +46,7 @@ export default {
         songListTmp.unshift(songDeatil)
         this.setSongList(songListTmp)
       }
+      addToStorage(searchHistory, songDeatil)
       this.$refs.notify.show()
       this.setSongDetail(songDeatil)
     },
@@ -65,6 +68,9 @@ export default {
 <style scoped lang="stylus" rel="stylesheet/stylus">
 .serach-result
   height 100%
+  overflow hidden
+  .scroll
+    overflow hidden
   .else
     width 100%
     margin 30px auto

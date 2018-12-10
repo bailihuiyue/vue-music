@@ -1,11 +1,16 @@
 <!-- 单条音乐播放条目 -->
 <template>
-    <div class="music-list">
+    <div class="music-list" v-if="name||singer">
         <img v-if="pic" v-lazy="pic" class="avatar">
         <i v-if="icon" :class="icon" class="icon"></i>
         <div class="info-wrap">
-            <div class="singer" v-if="singer">{{singer}}</div>
-            <div class="name" :class="searchSongStyle?'search-song-style':''">{{name}}</div>
+            <div v-if="searchSongStyle">
+                <div class="name search-song-style" v-if="name">{{name+' - '+singer}}</div>
+            </div>
+            <div v-else>
+                <div class="name" v-if="name" :class="searchSongStyle?'search-song-style':''">{{name}}</div>
+                <div class="singer" v-if="singer">{{singer}}</div>
+            </div>
         </div>
     </div>
 </template>
@@ -31,7 +36,8 @@ export default {
     },
     name: {
       type: String,
-      required: true
+      required: true,
+      default: ''
     },
     searchSongStyle: {
       type: Boolean,
@@ -50,8 +56,11 @@ export default {
 </script>
 <style scoped lang="stylus" rel="stylesheet/stylus">
 @import '~common/stylus/variable'
+    @import '~common/stylus/mixin'
 .music-list
-    margin 10px
+    margin 15px 10px
+    width 100%
+    display flex
     .avatar
         width 50px
         height 50px
@@ -62,15 +71,19 @@ export default {
         color $color-text-d
         margin-right 15px
     .info-wrap
+        flex 1
+        width 0
         display inline-block
-        vertical-align middle
-        .singer
-            color $color-text
-            font-size $font-size-small
-            margin-bottom 5px
+        // vertical-align middle
         .name
+            color $color-text
+            font-size $font-size-medium
+            ellipsis()
+        .singer
             color $color-text-l
-            font-size $font-size-small-s
+            font-size $font-size-medium
+            margin-top 6px
+            ellipsis()
             // padding-bottom 5px
         .search-song-style
             font-size $font-size-medium

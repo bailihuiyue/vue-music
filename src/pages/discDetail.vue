@@ -20,7 +20,7 @@
         <div class="bg-layer" ref="layer"></div>
         <scroll class="song-list-wrap" ref="BScroll" :probeType="3" :listenScroll="true" @scroll="onScroll" :class="isMiniPlayShow?'showMiniPlayer':''">
           <div class="song-list">
-            <div v-for="(l,i) in songs" :key="i" @click="playMusic(l.id,i)" class="song-list-item">
+            <div v-for="(l,i) in songs" :key="i" @click="playMusic(l,i)" class="song-list-item">
               <music-list :singer="l.singer" :name="l.name"></music-list>
             </div>
           </div>
@@ -36,12 +36,13 @@ import musicTitle from '../components/musicTitle/musicTitle'
 import playAll from '../components/play-all/play-all.vue'
 import musicList from '../components/musicList/musicList'
 import scroll from '../components/scroll/scroll.vue'
-import { prefixStyle, preLoadImg } from '../common/js/utils.js'
-import { getSongDetail } from '../api/song.js'
+import { prefixStyle } from '../common/js/utils.js'
 import { mapMutations, mapGetters } from 'vuex'
+import {playMusicMixin} from '../common/js/mixins.js'
 const transform = prefixStyle('transform')
 const RESERVED_HEIGHT = 40
 export default {
+  mixins: [playMusicMixin],
   data() {
     return {
       data: '',
@@ -63,25 +64,8 @@ export default {
     onScroll: function(pos) {
       this.scrollY = pos.y
     },
-    playMusic(id, i) {
-      let self = this
-      getSongDetail(id).then(res => {
-        preLoadImg(
-          res.data.pic,
-          function() {
-            self.setSongDetail(res.data)
-            self.setCurrnetSongIndex(i)
-            self.showPlayMusic(true)
-          },
-          self
-        )
-      })
-    },
     ...mapMutations({
-      setSongDetail: 'SET_SONG_DETAIL',
-      setSongList: 'SET_SONG_LIST',
-      setCurrnetSongIndex: 'SET_CURRENT_SONG_INDEX',
-      showPlayMusic: 'SHOW_PLAY_MUSIC'
+      setSongList: 'SET_SONG_LIST'
     }),
     beforeEnter() {
       // 由于路由使用了keep-alive,因此页面数据只初始化一次,调用beforeEnter则可以每次触发

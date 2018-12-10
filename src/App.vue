@@ -1,30 +1,12 @@
 <template>
-  <div id="app">
-    <div class="main-header">
-      <m-header></m-header>
-      <tab
-        prevent-default
-        v-model="tabIndex"
-        selected
-        @on-before-index-change="switchTabItem"
-        active-color="#ffcd32"
-        custom-bar-width="35px"
-      >
-        <tab-item>推荐</tab-item>
-        <tab-item>歌手</tab-item>
-        <tab-item>排行</tab-item>
-        <tab-item>搜索</tab-item>
-      </tab>
-    </div>
-    <div class="main-body">
-      <!-- TODO:learn:处理有些不需要被缓存的页面的方法 -->
-      <keep-alive>
+  <div id="app" ref='app'>
+    <!-- TODO:learn:处理有些不需要被缓存的页面的方法 -->
+    <keep-alive>
           <router-view v-if="$route.meta.keepAlive"></router-view>
       </keep-alive>
       <router-view v-if="!$route.meta.keepAlive">
           <!-- discDetial页面不需要被缓存 -->
-      </router-view>
-    </div>
+    </router-view>
     <play-music ref="playMusic"></play-music>
   </div>
 </template>
@@ -33,7 +15,7 @@
 import MHeader from './components/header/m-header.vue'
 import playMusic from './pages/playMusic'
 import { Tab, TabItem } from 'vux'
-// import { mapState } from 'vuex'
+import { mapGetters } from 'vuex'
 export default {
   name: 'App',
   components: {
@@ -68,9 +50,7 @@ export default {
   mounted() {
     // debugger
     // 预加载计算playMusic组件中body的高度
-    let playMusic = this.$refs.playMusic.$el.getElementsByClassName(
-      'play-music'
-    )[0]
+    let playMusic = this.$refs.playMusic.$el.getElementsByClassName('play-music')[0]
     let body = this.$refs.playMusic.$el.getElementsByClassName('body')[0]
     let footer = this.$refs.playMusic.$el.getElementsByClassName('footer')[0]
 
@@ -83,7 +63,21 @@ export default {
     playMusic.style.display = 'none'
     playMusic.style.zIndex = '2'
   },
-  computed: {}
+  computed: {
+    ...mapGetters([
+      'isMiniPlayShow'
+    ])
+  },
+  watch: {
+    isMiniPlayShow() {
+      // 迷你播放器存在时,body高度减少60px,防止遮挡内容
+      if (this.isMiniPlayShow) {
+        this.$refs.app.style.height = 'calc(100% - 60px)'
+      } else {
+        this.$refs.app.style.height = '100%'
+      }
+    }
+  }
 }
 </script>
 
@@ -102,6 +96,4 @@ export default {
   .main-body
     flex 1
     overflow hidden
-  .play-music
-    flex 0 0 $miniPlayerHeight
 </style>

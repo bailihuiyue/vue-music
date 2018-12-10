@@ -10,7 +10,7 @@ vant swipe插件,会导致歌曲推荐页面keep-alive失效,原因未知,可能
     最后发现跟时间有关,快速切换页面就推荐页能保持住上次的滚动位置,时间长了就不行,看遍了代码也没有发现时间的操作,最后想到了
     轮播图,注释掉,果然可以了
     问题已确认,更换vux轮播图仍然会导致keep-alive失效,原因未知
-
+用插件的坏处:dom结构都是别人定好的,不一定符合自己的业务需求,用的时候很爽,等到不符合需要时再改就很难了
 
 
 技能使用
@@ -21,6 +21,8 @@ vant swipe插件,会导致歌曲推荐页面keep-alive失效,原因未知,可能
     vue-lazy-load
     图片预加载
     flex 布局
+    mixin
+    better-scroll
     
 UI地址:http://ustbhuangyi.com/music/#/recommend    
 接口地址:https://www.bzqll.com/2018/10/39.html#tencent

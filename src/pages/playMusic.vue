@@ -1,10 +1,13 @@
 <!-- 音乐播放页面 -->
 <template>
-  <div class="play-music-wrapper" :class="isMiniPlayShow?'activeFlex':''">
+  <div class="play-music-wrapper">
     <transition
       name="player"
-      mode="in-out"
-      @afterEnter="afterEnter"
+      @before-Enter="beforeEnter"
+      @enter="enter"
+      @after-enter="afterEnter"
+      @leave="leave"
+      @after-leave="afterLeave"
     >
       <div
         class="play-music"
@@ -43,11 +46,14 @@
             :min-moving-distance="20"
           >
             <swiper-item>
-              <div
-                class="disc rotate"
-                :class="isPaused?'pause-rotate':''"
-              >
-                <img :src="stateSongDetail.pic">
+              <div class="disc-wrap" ref="discWrap">
+                <div
+                  class="disc rotate"
+                  :class="isPaused?'pause-rotate':''"
+                   ref="disc"
+                >
+                  <img :src="stateSongDetail.pic">
+                </div>
               </div>
               <div class="lyric">{{currentLyric.txt}}</div>
             </swiper-item>
@@ -262,7 +268,7 @@
       @onConfirm="onConfirm"
       @onCancel="onCancel"
     ></confirm>
-    <add-song v-if="stateShowAddSong" :isShowAddSong="true" @playSearchedMusic="changeMusicIndex"></add-song>
+    <add-song v-show="stateShowAddSong" :isShowAddSong="true" @playSearchedMusic="changeMusicIndex"></add-song>
   </div>
 </template>
 
@@ -272,6 +278,7 @@ import {
   /* getSongDetail, */
   getLyric
 } from '../api/song.js'
+import animations from 'create-keyframe-animation'
 import { mapState, mapMutations, mapGetters } from 'vuex'
 import { Row, Col, Slider } from 'vant'
 import { Swiper, SwiperItem, XCircle, Popup } from 'vux'
@@ -284,12 +291,16 @@ import {
   isInList,
   removeFromStorage,
   getRandom,
-  getSongsFromLocalStorage
+  getSongsFromLocalStorage,
+  prefixStyle
 } from '../common/js/utils.js'
 import musicList from '../components/musicList/musicList'
 import playAll from '../components/play-all/play-all'
 import confirm from '../components/confirm/confirm'
 import addSong from '../components/add-song/add-song'
+
+const transform = prefixStyle('transform')
+
 export default {
   components: {
     musicTitle,
@@ -360,7 +371,6 @@ export default {
         removeFromStorage(history, this.stateSongDetail)
       }
       addToStorage(history, this.stateSongDetail)
-      this.log(getSongsFromLocalStorage(history))
     },
     format(interval) {
       interval = interval | 0
@@ -368,11 +378,71 @@ export default {
       const second = this._pad(interval % 60)
       return `${minute}:${second}`
     },
-    afterEnter(e) {
+    beforeEnter(e) {
+      setTimeout(() => {
+        this.$refs.fullLyricScroll.refresh()
+        this.currentLyric.txt && this.changeLrc(this.currentLyric)
+      }, 20)
       // 计算body的高度
       // let footerTop = this.$refs.footer.getBoundingClientRect().top
       // let bodyTop = this.$refs.body.getBoundingClientRect().top
       // this.$refs.body.style.height = footerTop - bodyTop + 'px'
+    },
+    enter(el, done) {
+      const {x, y, scale} = this._getPosAndScale()
+
+      let animation = {
+        0: {
+          transform: `translate3d(${x}px,${y}px,0) scale(${scale})`
+        },
+        60: {
+          transform: `translate3d(0,0,0) scale(1.1)`
+        },
+        100: {
+          transform: `translate3d(0,0,0) scale(1)`
+        }
+      }
+
+      animations.registerAnimation({
+        name: 'move',
+        animation,
+        presets: {
+          duration: 400,
+          easing: 'linear'
+        }
+      })
+      animations.runAnimation(this.$refs.discWrap, 'move', done)
+    },
+    afterEnter() {
+      animations.unregisterAnimation('move')
+      this.$refs.discWrap.style.animation = ''
+    },
+    leave(el, done) {
+      this.$refs.discWrap.style.transition = 'all 0.4s'
+      const {x, y, scale} = this._getPosAndScale()
+      this.$refs.discWrap.style[transform] = `translate3d(${x}px,${y}px,0) scale(${scale})`
+      setTimeout(() => {
+        done()
+      }, 400)
+    },
+    afterLeave() {
+      this.$refs.discWrap.style.transition = ''
+      this.$refs.discWrap.style[transform] = ''
+    },
+    _getPosAndScale() {
+      const targetWidth = 40
+      const paddingLeft = 40
+      const paddingBottom = 30
+      const paddingTop = 80
+      const width = window.innerWidth * 0.8
+      const scale = targetWidth / width
+      const x = -(window.innerWidth / 2 - paddingLeft)
+      const y = window.innerHeight - paddingTop - width / 2 - paddingBottom
+      return {
+        x,
+        y,
+        scale
+      }
     },
     _pad(num, n = 2) {
       let len = num.toString().length
@@ -425,7 +495,7 @@ export default {
       this.next()
     },
     error() {
-      this.$toast('版权要求,该歌曲无法播放,即将切换下一首~~')
+      this.$toast('版权要求,无法播放,切换下一首~~')
       let self = this
       setTimeout(() => {
         self.next()
@@ -629,12 +699,6 @@ export default {
         // this.log(isInList(fav, this.stateSongDetail), false)
       }
     }
-    // ,
-    // stateShowPlayMusic(newVal, oldVal) {
-    //   if (this.stateShowPlayMusic) {
-    //     this.songDetail = this.stateSongDetail.pic ? this.stateSongDetail : ''
-    //   }
-    // }
   },
   computed: {
     ...mapState([
@@ -694,13 +758,10 @@ export default {
 <style scoped lang="stylus" rel="stylesheet/stylus">
 @import '~common/stylus/variable'
 @import '~common/stylus/mixin'
-//activeFlex 解决了当迷你播放器出现时遮挡住屏幕底部的问题
-.activeFlex
-  flex 0 0 $miniPlayerHeight
 .play-music
   full-page()
   &.player-enter-active, &.player-leave-active
-    transition all 0.5s
+    transition all 0.4s
     .header, .footer
       // 贝塞尔曲线,抄的
       transition all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32)
@@ -742,20 +803,23 @@ export default {
         background $color-text-ll
       /deep/ .vux-indicator
         bottom -25px
-      .disc
-        width 80%
-        margin 20px auto
-        border-radius 50%
-        overflow hidden
-        border 10px solid rgba(255, 255, 255, 0.15)
-        rotateDisc()
-        img
-          width 100%
-          height 100%
+    .disc
+      width 80%
+      margin 20px auto
+      border-radius 50%
+      overflow hidden
+      border 10px solid rgba(255, 255, 255, 0.15)
+      rotateDisc()
+      img
+        width 100%
+        height 100%
     .lyric
       text-align center
       font-size $font-size-medium
       color $color-text-l
+      position absolute
+      bottom 0
+      width 100%
     .full-lyric-wrap
       .txt
         line-height 32px

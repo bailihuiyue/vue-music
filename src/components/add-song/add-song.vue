@@ -1,27 +1,28 @@
 <!-- 添加歌曲到列表页面 -->
 <template>
-  <transition name="left-slide">
+  <transition name="left-slide" @before-enter="beforeEnter">
     <div class="add-song-wrap">
       <div class="add-song">
         <music-title
           title="添加歌曲到列表"
           :isShowAddSong="true"
             ></music-title>
-        <search placeholder="搜索歌曲"  @query="searchMusic"></search>
-        <tab
+        <search placeholder="搜索歌曲" ref="search" @query="searchMusic" @clearSearch="clearSearch"></search>
+        <tab v-if="!songList"
           :line-width="0"
           bar-active-color="#333"
           :animate="false"
         >
           <tab-item
             selected
-            @click.native="addSongTab(0)"
+            @click.native="handleClick(his)"
           >最近播放</tab-item>
-          <tab-item @click.native="addSongTab(1)">搜索历史</tab-item>
+          <tab-item @click.native="handleClick(seaH)">搜索历史</tab-item>
         </tab>
-        <div class="s-wrap">
-          <search-result v-if="songList" :songList="songList"></search-result>
+        <div class="s-wrap" v-if="songList">
+          <search-result :songList="songList"></search-result>
         </div>
+        <song-history v-else :songType="songType"></song-history>
       </div>
     </div>
   </transition>
@@ -31,12 +32,17 @@
 import musicTitle from '../musicTitle/musicTitle'
 import search from '../search/search'
 import searchResult from '../searchResult/searchResult'
+import songHistory from '../songHistory/songHistory'
 import { searchSong } from '../../api/song.js'
 import { Tab, TabItem } from 'vux'
+import {getSongsFromLocalStorage, history, searchHistory} from '../../common/js/utils.js'
 export default {
   data() {
     return {
-      songList: ''
+      songList: '',
+      songType: history,
+      his: history,
+      seaH: searchHistory
     }
   },
 
@@ -45,22 +51,11 @@ export default {
     Tab,
     TabItem,
     search,
-    searchResult
+    searchResult,
+    songHistory
   },
 
   methods: {
-    addSongTab(type) {
-      switch (type) {
-        case 0:
-          this.log(0)
-          break
-        case 1:
-          this.log(1)
-          break
-        default:
-          this.log(-1)
-      }
-    },
     searchMusic(music) {
       if (music) {
         searchSong(music).then((res) => {
@@ -69,11 +64,22 @@ export default {
           }
         })
       }
+    },
+    clearSearch() {
+      this.songList = ''
+    },
+    beforeEnter() {
+      this.$refs.search.clear()
+    },
+    handleClick(type) {
+      this.songType = type
     }
   },
 
   computed: {},
-  created() {},
+  created() {
+    this.songList = getSongsFromLocalStorage(history)
+  },
   mounted() {}
 }
 </script>
@@ -103,6 +109,10 @@ export default {
       width 80%
       margin 20px auto auto auto
       flex 0 0 20px
+      /deep/ .vux-tab-container
+        border-radius 5px
+        .vux-tab
+          background-color transparent
     .s-wrap
       flex 1
       // TODO:learn:即使设置flex 1 高度也会被撑开,百度说需要加下面代码

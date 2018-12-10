@@ -24,6 +24,7 @@ export default {
   methods: {
     clear() {
       this.query = ''
+      this.$emit('clearSearch')
     },
     setQuery(query) {
       this.query = query

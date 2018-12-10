@@ -149,7 +149,7 @@ export function getItemIndex(list, item) {
 // 获取收藏的歌曲,
 // type:history=听过的历史记录
 //      fav=收藏
-//      search=搜索历史
+//      searchHistory=搜索历史
 export function getSongsFromLocalStorage(type) {
   return storage.get(type)
 }
@@ -164,6 +164,6 @@ export function getRandom(begin, end) {
 }
 export const fav = 'fav'
 export const history = 'history'
-
+export const searchHistory = 'searchHistory'
 // 歌手图片地址
 // https://y.gtimg.cn/music/photo_new/T001R300x300M000${002J4UUk29y8BY}.jpg?max_age=2592000
