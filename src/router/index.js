@@ -7,6 +7,8 @@ import Recommend from '../pages/recommend.vue'
 import DiscDetail from '../pages/discDetail.vue'
 import Singers from '../pages/singers.vue'
 import Index from '../pages/index.vue'
+import Rank from '../pages/rank.vue'
+import SearchSongs from '../pages/searchSongs.vue'
 Vue.use(Router)
 
 export default new Router({
@@ -17,19 +19,38 @@ export default new Router({
       name: 'index',
       component: Index,
       redirect: '/recommend',
-      meta: {
-        keepAlive: true
-      },
       children: [
         {
           path: '/recommend',
           name: 'recommend',
-          component: Recommend
+          component: Recommend,
+          meta: {
+            keepAlive: true
+          }
         },
         {
           path: '/singers',
           name: 'singers',
-          component: Singers
+          component: Singers,
+          meta: {
+            keepAlive: true
+          }
+        },
+        {
+          path: '/rank',
+          name: 'rank',
+          component: Rank,
+          meta: {
+            keepAlive: true
+          }
+        },
+        {
+          path: '/searchSongs',
+          name: 'searchSongs',
+          component: SearchSongs,
+          meta: {
+            keepAlive: true
+          }
         }
       ]
       // TODO:learn:理论上不应该加/discDetail应该是discDetail,前面加/是一种简便写法

@@ -4,9 +4,8 @@
     <div class="main-header">
       <m-header></m-header>
       <tab
-        prevent-default
+        :prevent-default="true"
         v-model="tabIndex"
-        selected
         @on-before-index-change="switchTabItem"
         active-color="#ffcd32"
         custom-bar-width="35px"
@@ -51,18 +50,46 @@ export default {
         case 1:
           this.$router.push('/singers')
           break
+        case 2:
+          this.$router.push('/rank')
+          break
+        case 3:
+          this.$router.push('/searchSongs')
+          break
+        default:
+          this.$router.push('/recommend')
       }
       this.$vux.loading.show()
       setTimeout(() => {
         this.$vux.loading.hide()
         this.tabIndex = index
-      }, 100)
+      }, 200)
     }
   },
 
   computed: {},
   created() {},
-  mounted() {}
+  mounted() {
+    this.$nextTick(() => {
+      let path = this.$route.name
+      switch (path) {
+        case 'recommend':
+          this.tabIndex = 0
+          break
+        case 'singers':
+          this.tabIndex = 1
+          break
+        case 'rank':
+          this.tabIndex = 2
+          break
+        case 'searchSongs':
+          this.tabIndex = 3
+          break
+        default:
+          this.tabIndex = 0
+      }
+    })
+  }
 }
 
 </script>

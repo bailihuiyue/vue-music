@@ -3,8 +3,8 @@
     <!-- TODO:learn:处理有些不需要被缓存的页面的方法 -->
     <keep-alive>
           <router-view v-if="$route.meta.keepAlive"></router-view>
-      </keep-alive>
-      <router-view v-if="!$route.meta.keepAlive">
+    </keep-alive>
+    <router-view v-if="!$route.meta.keepAlive">
           <!-- discDetial页面不需要被缓存 -->
     </router-view>
     <play-music ref="playMusic"></play-music>

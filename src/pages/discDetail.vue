@@ -68,7 +68,6 @@ export default {
       setSongList: 'SET_SONG_LIST'
     }),
     beforeEnter() {
-      // 由于路由使用了keep-alive,因此页面数据只初始化一次,调用beforeEnter则可以每次触发
       let discid = this.$route.params.id
       getSongList(discid)
         .then(res => {

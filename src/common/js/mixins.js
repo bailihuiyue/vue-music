@@ -24,7 +24,7 @@ export const playMusicMixin = {
         cb()
         this.$vux.loading.hide()
       }
-      image.onerror = function() {
+      image.onerror = () => {
         this.$toast('背景图片加载失败!')
         this.$vux.loading.hide()
       }
