@@ -34,7 +34,6 @@ export const playMusicMixin = {
       this.preLoadImg(
         songDetail.pic,
         () => {
-          console.log(this)
           this.setSongDetail(songDetail)
           this.setCurrnetSongIndex(i)
           this.showPlayMusic(true)

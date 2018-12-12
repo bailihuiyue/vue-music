@@ -1,7 +1,7 @@
 <!-- 搜素结果显示页面 -->
 <template>
   <div class="serach-result">
-    <scroll :data="songList" >
+    <scroll :data="songList" ref="scroll">
       <div class="scroll-wrap" v-if="songList.length>0">
         <div
           v-for="song in songList"
@@ -21,7 +21,7 @@ import musicList from '../musicList/musicList'
 import scroll from '../scroll/scroll'
 import notify from '../notify/notify'
 import { getItemIndex, addToStorage, searchHistory } from '../../common/js/utils.js'
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations, mapGetters } from 'vuex'
 export default {
   data() {
     return {}
@@ -49,17 +49,32 @@ export default {
       addToStorage(searchHistory, songDeatil)
       this.$refs.notify.show()
       this.setSongDetail(songDeatil)
+      this.showPlayMusic(true)
     },
     ...mapMutations({
       setSongList: 'SET_SONG_LIST',
-      setSongDetail: 'SET_SONG_DETAIL'
+      setSongDetail: 'SET_SONG_DETAIL',
+      showPlayMusic: 'SHOW_PLAY_MUSIC'
     })
   },
 
   computed: {
     ...mapState([
       'stateSongList'
+    ]),
+    ...mapGetters([
+      'isMiniPlayShow'
     ])
+  },
+  watch: {
+    isMiniPlayShow() {
+      this.$nextTick(() => {
+        this.log(1)
+        setTimeout(() => {
+          this.$refs.scroll.refresh()
+        }, 20)
+      })
+    }
   },
   created() {},
   mounted() {}

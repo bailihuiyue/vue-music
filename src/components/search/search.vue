@@ -14,11 +14,15 @@ export default {
     placeholder: {
       type: String,
       default: '搜索歌曲、歌手'
+    },
+    txt: {
+      type: String,
+      default: ''
     }
   },
   data() {
     return {
-      query: ''
+      query: this.txt
     }
   },
   methods: {
@@ -37,6 +41,11 @@ export default {
     this.$watch('query', debounce((newQuery) => {
       this.$emit('query', newQuery)
     }, 200))
+  },
+  watch: {
+    txt(newVal) {
+      this.query = newVal
+    }
   }
 }
 </script>
