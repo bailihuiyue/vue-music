@@ -1,14 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-// import MHeader from '../components/header/m-header.vue'
-import User from '../pages/user.vue'
-import Recommend from '../pages/recommend.vue'
-import DiscDetail from '../pages/discDetail.vue'
-import Singers from '../pages/singers.vue'
-import Index from '../pages/index.vue'
-import Rank from '../pages/rank.vue'
-import SearchSongs from '../pages/searchSongs.vue'
 Vue.use(Router)
 
 export default new Router({
@@ -17,13 +9,13 @@ export default new Router({
     {
       path: '/',
       name: 'index',
-      component: Index,
+      component: resolve => require(['../pages/index.vue'], resolve),
       redirect: '/recommend',
       children: [
         {
           path: '/recommend',
           name: 'recommend',
-          component: Recommend,
+          component: resolve => require(['../pages/recommend.vue'], resolve),
           meta: {
             keepAlive: true
           }
@@ -31,7 +23,7 @@ export default new Router({
         {
           path: '/singers',
           name: 'singers',
-          component: Singers,
+          component: resolve => require(['../pages/singers.vue'], resolve),
           meta: {
             keepAlive: true
           }
@@ -39,7 +31,7 @@ export default new Router({
         {
           path: '/rank',
           name: 'rank',
-          component: Rank,
+          component: resolve => require(['../pages/rank.vue'], resolve),
           meta: {
             keepAlive: true
           }
@@ -47,7 +39,7 @@ export default new Router({
         {
           path: '/searchSongs',
           name: 'searchSongs',
-          component: SearchSongs,
+          component: resolve => require(['../pages/searchSongs.vue'], resolve),
           meta: {
             keepAlive: true
           }
@@ -65,7 +57,7 @@ export default new Router({
     {
       path: '/discDetail/:id',
       name: 'discDetail',
-      component: DiscDetail,
+      component: resolve => require(['../pages/discDetail.vue'], resolve),
       meta: {
         keepAlive: false
       }
@@ -73,7 +65,7 @@ export default new Router({
     {
       path: '/user',
       name: 'user',
-      component: User,
+      component: resolve => require(['../pages/user.vue'], resolve),
       meta: {
         keepAlive: true
       }

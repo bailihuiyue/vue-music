@@ -32,6 +32,7 @@
 
 <script>
 import { getSongList } from '../api/recommend.js'
+import { searchSong } from '../api/song.js'
 import musicTitle from '../components/musicTitle/musicTitle'
 import playAll from '../components/play-all/play-all.vue'
 import musicList from '../components/musicList/musicList'
@@ -46,7 +47,6 @@ export default {
   data() {
     return {
       data: '',
-      bg: '',
       songs: [],
       scroll: Object,
       scrollY: 0
@@ -69,16 +69,31 @@ export default {
     }),
     beforeEnter() {
       let discid = this.$route.params.id
-      getSongList(discid)
-        .then(res => {
-          this.data = res.data
-          this.songs = res.data.songs
-          this.setSongList(res.data.songs)
-          this.bg = { background: `url(${res.data.logo})` }
+      // 歌单传来的id是数字
+      if (Number(discid)) {
+        getSongList(discid)
+          .then(res => {
+            this.data = res.data
+            this.songs = res.data.songs
+            this.setSongList(res.data.songs)
+          })
+          .catch(err => {
+            console.log('getSongList:', err)
+          })
+      } else {
+        // 传来歌手名就搜索歌手并且显示
+        let singer = discid.split('-')[0]
+        let mid = discid.split('-')[1]
+        searchSong(singer).then(res => {
+          let img = `https://y.gtimg.cn/music/photo_new/T001R300x300M000${mid}.jpg?max_age=2592000`
+          this.log(this.$route.query)
+          this.data = {title: singer, logo: img}
+          this.songs = res.data
+          this.setSongList(res.data)
+        }).catch(err => {
+          this.log('discDetail/searchSong:', err)
         })
-        .catch(err => {
-          console.log('getSongList:', err)
-        })
+      }
     },
     refreshScroll() {
       this.$refs.BScroll.refresh()

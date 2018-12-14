@@ -5,7 +5,7 @@
         <div
             class="tab-swiper vux-center"
             v-for="(h,i) in historyMsc"
-            :key="h.name+h.singer"
+            :key="h.name+i"
         >
         <music-list :singer="h.singer||''" :name="h.name||''" @click.native="playMusic(h,i)"></music-list>
         </div>
@@ -56,7 +56,6 @@ export default {
   watch: {
     songType() {
       this.historyMsc = getSongsFromLocalStorage(this.songType)
-      this.log(this.historyMsc)
     }
   }
 }

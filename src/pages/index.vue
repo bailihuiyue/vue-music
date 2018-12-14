@@ -42,7 +42,6 @@ export default {
 
   methods: {
     switchTabItem(index) {
-      console.log('on-before-index-change', index)
       switch (index) {
         case 0:
           this.$router.push('/')

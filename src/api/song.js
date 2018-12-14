@@ -21,6 +21,7 @@ export function searchSong(name) {
     key,
     s: name,
     limit: 60,
-    type: 'song'
+    type: 'song',
+    offset: 0
   }, 'songDetail')
 }
