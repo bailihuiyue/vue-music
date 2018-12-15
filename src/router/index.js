@@ -10,7 +10,7 @@ export default new Router({
   routes: [
     {
       // TODO:learn:路由问题:初始路径:要写初始的url,比如网址是localhost,那么就写成/,如果是www.123.com/vue,那么就写成/vue
-      path: '/doc',
+      path: '/vue-music/doc',
       name: 'index',
       component: Index,
       redirect: '/recommend',

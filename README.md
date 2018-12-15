@@ -10,7 +10,7 @@
 ![图3](https://github.com/bailihuiyue/vue-music/raw/master/doc/3.png)
 ![图4](https://github.com/bailihuiyue/vue-music/raw/master/doc/4.png)
 
-[DEMO预览](https://github.com/bailihuiyue/vue-music/raw/master/doc/index.html) 请使用chrome浏览器点击f12模拟手机查看
+[DEMO预览](https://bailihuiyue.github.io/vue-music/doc/index.html) 请使用chrome浏览器点击f12模拟手机查看
 
 #### 制作目的: 在开发一个有实用功能的webapp的同时再次熟悉vue,探索着同时使用两个ui库进行开发,过程中也遇到了不少问题所有内容都标记在槽点.txt中
 
