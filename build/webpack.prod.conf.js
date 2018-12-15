@@ -25,7 +25,10 @@ const webpackConfig = merge(baseWebpackConfig, {
   output: {
     path: config.build.assetsRoot,
     filename: utils.assetsPath('js/[name].[chunkhash].js'),
-    chunkFilename: utils.assetsPath('js/[id].[chunkhash].js')
+    chunkFilename: utils.assetsPath('js/[id].[chunkhash].js'),
+    //TODO:learn:解决懒加载路径问题publicPath一定要是懒加载能访问到的路径,最好从跟目录开始
+    //因为url是会因为路由而改变的
+    publicPath: "/vue/"
   },
   plugins: [
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
@@ -35,7 +38,10 @@ const webpackConfig = merge(baseWebpackConfig, {
     new UglifyJsPlugin({
       uglifyOptions: {
         compress: {
-          warnings: false
+          warnings: false,
+          //TODO:learn:保留代码中的debugger和console
+          drop_debugger: false,
+          drop_console: false  
         }
       },
       sourceMap: config.build.productionSourceMap,

@@ -1,21 +1,23 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
+import Index from '../pages/index.vue'
+import Recommend from '../pages/recommend.vue'
 Vue.use(Router)
 
 export default new Router({
   mode: 'history', // 路由使用#还是pushState
   routes: [
     {
-      path: '/',
+      // TODO:learn:路由问题:初始路径:要写初始的url,比如网址是localhost,那么就写成/,如果是www.123.com/vue,那么就写成/vue
+      path: '/doc',
       name: 'index',
-      component: resolve => require(['../pages/index.vue'], resolve),
+      component: Index,
       redirect: '/recommend',
       children: [
         {
           path: '/recommend',
           name: 'recommend',
-          component: resolve => require(['../pages/recommend.vue'], resolve),
+          component: Recommend,
           meta: {
             keepAlive: true
           }
@@ -66,6 +68,13 @@ export default new Router({
       path: '/user',
       name: 'user',
       component: resolve => require(['../pages/user.vue'], resolve),
+      meta: {
+        keepAlive: true
+      }
+    },
+    {
+      path: '*',
+      redirect: '/recommend',
       meta: {
         keepAlive: true
       }

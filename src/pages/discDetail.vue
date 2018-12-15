@@ -86,7 +86,6 @@ export default {
         let mid = discid.split('-')[1]
         searchSong(singer).then(res => {
           let img = `https://y.gtimg.cn/music/photo_new/T001R300x300M000${mid}.jpg?max_age=2592000`
-          this.log(this.$route.query)
           this.data = {title: singer, logo: img}
           this.songs = res.data
           this.setSongList(res.data)

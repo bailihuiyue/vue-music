@@ -1,16 +1,16 @@
 # vue-music
 
 > vue音乐播放器,使用qq音乐接口
-UI:http://ustbhuangyi.com/music/#/recommend
-技术：vue全家桶,懒加载,代理,eslint配置,vue-lazy-load,图片预加载,flex 布局,mixin,better-scroll等等
-UI库:vant,vux
+>UI:http://ustbhuangyi.com/music/#/recommend
+>技术：vue全家桶,懒加载,代理,eslint配置,vue-lazy-load,图片预加载,flex 布局,mixin,better-scroll等等
+>UI库:vant,vux
 
-![图1](https://github.com/bailihuiyue/ngx-wechat/raw/master/thumb/1.png)
-![图2](https://github.com/bailihuiyue/ngx-wechat/raw/master/thumb/2.png)
-![图3](https://github.com/bailihuiyue/ngx-wechat/raw/master/thumb/3.png)
-![图4](https://github.com/bailihuiyue/ngx-wechat/raw/master/thumb/4.png)
+![图1](https://github.com/bailihuiyue/vue-music/doc/1.png)
+![图2](https://github.com/bailihuiyue/vue-music/doc/2.png)
+![图3](https://github.com/bailihuiyue/vue-music/doc/3.png)
+![图4](https://github.com/bailihuiyue/vue-music/doc/4.png)
 
-[DEMO预览](https://bailihuiyue.github.io/ngx-wechat/dist/angular/index.html) 请使用chrome浏览器点击f12模拟手机查看
+[DEMO预览](https://github.com/bailihuiyue/vue-music/doc/index.html) 请使用chrome浏览器点击f12模拟手机查看
 
 #### 制作目的: 在开发一个有实用功能的webapp的同时再次熟悉vue,探索着同时使用两个ui库进行开发,过程中也遇到了不少问题所有内容都标记在槽点.txt中
 

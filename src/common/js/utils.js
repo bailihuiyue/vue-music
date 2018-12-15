@@ -151,7 +151,7 @@ export function getItemIndex(list, item) {
 //      fav=收藏
 //      searchHistory=搜索历史
 export function getSongsFromLocalStorage(type) {
-  return storage.get(type)
+  return storage.get(type) || []
 }
 
 export function isInList(type, item) {
