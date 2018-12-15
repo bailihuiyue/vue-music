@@ -6,11 +6,11 @@ Vue.use(Router)
 
 export default new Router({
   // TODO:tip:感觉pushState适合网址路径为根路径的网站,想github这种嵌套比较多的,会出现很多问题
-  mode: 'history', // 路由使用#还是pushState
+  mode: 'hash', // 路由使用#还是pushState
   routes: [
     {
       // TODO:learn:路由问题:初始路径:要写初始的url,比如网址是localhost,那么就写成/,如果是www.123.com/vue,那么就写成/vue
-      path: '/vue-music/doc',
+      path: '/',
       name: 'index',
       component: Index,
       redirect: '/recommend',

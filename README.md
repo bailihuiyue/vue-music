@@ -1,9 +1,9 @@
 # vue-music
 
 > vue音乐播放器,使用qq音乐接口
->UI:http://ustbhuangyi.com/music/#/recommend
->技术：vue全家桶,懒加载,代理,eslint配置,vue-lazy-load,图片预加载,flex 布局,mixin,better-scroll等等
->UI库:vant,vux
+> UI:http://ustbhuangyi.com/music/#/recommend
+> 技术：vue全家桶,懒加载,代理,eslint配置,vue-lazy-load,图片预加载,flex 布局,mixin,better-scroll等等
+> UI库:vant,vux
 
 ![图1](https://github.com/bailihuiyue/vue-music/raw/master/doc/1.png)
 ![图2](https://github.com/bailihuiyue/vue-music/raw/master/doc/2.png)

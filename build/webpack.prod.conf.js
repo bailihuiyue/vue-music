@@ -28,7 +28,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     chunkFilename: utils.assetsPath('js/[id].[chunkhash].js'),
     //TODO:learn:解决懒加载路径问题publicPath一定要是懒加载能访问到的路径,最好从跟目录开始
     //因为url是会因为路由而改变的
-    publicPath: "/vue-music/doc"
+    // publicPath: "/vue-music/doc"
   },
   plugins: [
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
