@@ -5,6 +5,7 @@ import Recommend from '../pages/recommend.vue'
 Vue.use(Router)
 
 export default new Router({
+  // TODO:tip:感觉pushState适合网址路径为根路径的网站,想github这种嵌套比较多的,会出现很多问题
   mode: 'history', // 路由使用#还是pushState
   routes: [
     {
