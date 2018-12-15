@@ -357,7 +357,6 @@ export default {
           this.lyricParser && this.lyricParser.play()
         } else {
           // 处理无歌词情况
-          this.log(this.currentLyric)
           this.currentLyric.txt = '此歌曲为没有填词的纯音乐，请您欣赏'
         }
         this.canplayTriggered = true
@@ -604,7 +603,7 @@ export default {
     getLrc() {
       getLyric(this.stateSongDetail.lrc).then(res => {
         // 处理无歌词情况
-        if (res !== '[00:00:00]此歌曲为没有填词的纯音乐，请您欣赏') {
+        if (res.indexOf('[') >= 0) {
           this.lyricParser = new Lyric(res, this.changeLrc)
           this.fullLyric = this.lyricParser.lines
         } else {
@@ -644,9 +643,6 @@ export default {
     },
     removeMusic(item, i) {
       let songListTmp = JSON.parse(JSON.stringify(this.stateSongList))
-      // let index = songListTmp.filter((val) => {
-      //   return val.id === item.id
-      // })
       let index = -1
       songListTmp.forEach((val, i) => {
         if (val.id === item.id) {

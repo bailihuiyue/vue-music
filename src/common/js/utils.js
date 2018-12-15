@@ -109,7 +109,7 @@ export function debounce(func, delay) {
 
 export function addToStorage(type, item) {
   if (storage.has(type)) {
-    let list = storage.get(type)
+    let list = storage.get(type) || []
     if (!list.find(() => { return isObjExist(list, item) })) {
       list.unshift(item)
       storage.set(type, list)
@@ -120,7 +120,7 @@ export function addToStorage(type, item) {
 }
 
 export function removeFromStorage(type, item) {
-  let list = storage.get(type)
+  let list = storage.get(type) || []
   let index = getItemIndex(list, item)
   if (index >= 0) {
     list.splice(index, 1)
@@ -152,6 +152,10 @@ export function getItemIndex(list, item) {
 //      searchHistory=搜索历史
 export function getSongsFromLocalStorage(type) {
   return storage.get(type) || []
+}
+
+export function remvoeAllStorage() {
+  return storage.clear()
 }
 
 export function isInList(type, item) {
