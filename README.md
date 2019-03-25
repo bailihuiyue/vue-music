@@ -24,9 +24,11 @@
     1.目前无法通过地址栏url转发歌曲
     2.随机播放全部功能未开发
     3.部分使用假接口,比较忙没时间抓接口了
-    
+
 >目前bug:
     1.歌曲搜索页面中出现迷你播放器时scroll位置没有刷新
     2.刚刚开发完成大部分功能,bug较多,由于工作原因尚未修复,后期会完善这个webapp的
 
-### 已经上传node_modules依赖包,防止依赖包版本升级导致项目运行出错
+### ~~已经上传node_modules依赖包~~,防止依赖包版本升级导致项目运行出错
+
+######  下载node_modules包请移步:https://github.com/bailihuiyue/node-packages/blob/master/vue-music.rar
