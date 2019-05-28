@@ -13,7 +13,7 @@
         class="play-music"
         v-show="stateShowPlayMusic"
       >
-        <span v-if="!isOnLine">
+        <span v-if="isOnLine">
           <audio
             ref="audio"
             id="audio"
@@ -32,8 +32,9 @@
             @ended="ended"
             @error="error"
             @timeupdate="timeupdate"
-            src="../api/song.mp3"
+            src="/static/song.mp3"
           ></audio>
+          <!-- TODO:learn:播放本地音乐或者引用本地静态文件的话,放在static里就行了,然后/static/...这样引用就行 -->
         </span>
         <div class="background">
           <img
@@ -296,17 +297,17 @@
 </template>
 
 <script>
-import musicTitle from '../components/musicTitle/musicTitle'
+import musicTitle from '../components/musicTitle/musicTitle';
 import {
   /* getSongDetail, */
   getLyric
-} from '../api/song.js'
-import animations from 'create-keyframe-animation'
-import { mapState, mapMutations, mapGetters } from 'vuex'
-import { Row, Col, Slider } from 'vant'
-import { Swiper, SwiperItem, XCircle, Popup } from 'vux'
-import Lyric from 'lyric-parser'
-import scroll from '../components/scroll/scroll'
+} from '../api/song.js';
+import animations from 'create-keyframe-animation';
+import { mapState, mapMutations, mapGetters } from 'vuex';
+import { Row, Col, Slider } from 'vant';
+import { Swiper, SwiperItem, XCircle, Popup } from 'vux';
+import Lyric from 'lyric-parser';
+import scroll from '../components/scroll/scroll';
 import {
   addToStorage,
   fav,
@@ -316,12 +317,12 @@ import {
   getRandom,
   getSongsFromLocalStorage,
   prefixStyle
-} from '../common/js/utils.js'
-import musicList from '../components/musicList/musicList'
-import playAll from '../components/play-all/play-all'
-import confirm from '../components/confirm/confirm'
-import addSong from '../components/add-song/add-song'
-import { isOnLine } from '../api/mock'
+} from '../common/js/utils.js';
+import musicList from '../components/musicList/musicList';
+import playAll from '../components/play-all/play-all';
+import confirm from '../components/confirm/confirm';
+import addSong from '../components/add-song/add-song';
+import { isOnLine } from '../api/mock';
 
 const transform = prefixStyle('transform')
 
@@ -382,7 +383,7 @@ export default {
           this.lyricParser && this.lyricParser.play()
         } else {
           // 处理无歌词情况
-          this.currentLyric.txt = '此歌曲为没有填词的纯音乐，请您欣赏'
+          this.currentLyric.txt = '此歌曲为没有填词的纯音乐，请您欣赏';
         }
         this.canplayTriggered = true
       }
@@ -439,19 +440,21 @@ export default {
     },
     afterEnter() {
       animations.unregisterAnimation('move')
-      this.$refs.discWrap.style.animation = ''
+      this.$refs.discWrap.style.animation = '';
     },
     leave(el, done) {
-      this.$refs.discWrap.style.transition = 'all 0.4s'
+      this.$refs.discWrap.style.transition = 'all 0.4s';
       const { x, y, scale } = this._getPosAndScale()
-      this.$refs.discWrap.style[transform] = `translate3d(${x}px,${y}px,0) scale(${scale})`
+      this.$refs.discWrap.style[
+        transform
+      ] = `translate3d(${x}px,${y}px,0) scale(${scale})`
       setTimeout(() => {
         done()
       }, 400)
     },
     afterLeave() {
-      this.$refs.discWrap.style.transition = ''
-      this.$refs.discWrap.style[transform] = ''
+      this.$refs.discWrap.style.transition = '';
+      this.$refs.discWrap.style[transform] = '';
     },
     _getPosAndScale() {
       const targetWidth = 40
@@ -487,13 +490,13 @@ export default {
       switch (this.statePlayMode) {
         case 'order':
           this.setPlayMode('random')
-          break
+          break;
         case 'random':
           this.setPlayMode('loop')
-          break
+          break;
         case 'loop':
           this.setPlayMode('order')
-          break
+          break;
         default:
           this.setPlayMode('order')
       }
@@ -632,7 +635,7 @@ export default {
           this.lyricParser = new Lyric(res, this.changeLrc)
           this.fullLyric = this.lyricParser.lines
         } else {
-          this.lyricParser = ''
+          this.lyricParser = '';
           this.fullLyric = [
             { time: 0, txt: '此歌曲为没有填词的纯音乐，请您欣赏' }
           ]
@@ -646,10 +649,10 @@ export default {
             let bodyHeight = this.$refs.body.clientHeight
             let visiblelyrics = Math.floor((bodyHeight / wrapHeight) * number)
             this.middleLrc = Math.round(visiblelyrics / 2)
-            this.$refs.fullLyricScroll.$el.style.paddingTop = '0'
+            this.$refs.fullLyricScroll.$el.style.paddingTop = '0';
           } else {
             // 没有歌词时让提示居中
-            this.$refs.fullLyricScroll.$el.style.paddingTop = '50%'
+            this.$refs.fullLyricScroll.$el.style.paddingTop = '50%';
           }
         })
       })
@@ -682,8 +685,8 @@ export default {
       // TODO:bug:删除列表项目之后,列表长度未更新,导致随机放歌时可以有找不到的index
     },
     removeSongList() {
-      this.confirmTip = '是否清空播放列表'
-      this.confirmText = '清空'
+      this.confirmTip = '是否清空播放列表';
+      this.confirmText = '清空';
       this.showConfirm = true
     },
     onConfirm() {
@@ -744,13 +747,13 @@ export default {
     statePlayModeTxt: function(value) {
       switch (value) {
         case 'order':
-          return '顺序播放'
+          return '顺序播放';
         case 'random':
-          return '随机播放'
+          return '随机播放';
         case 'loop':
-          return '单曲循环'
+          return '单曲循环';
         default:
-          return '数据紊乱^_^'
+          return '数据紊乱^_^';
       }
     }
   },

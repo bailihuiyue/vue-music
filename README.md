@@ -28,6 +28,7 @@
 >目前bug:
     1.歌曲搜索页面中出现迷你播放器时scroll位置没有刷新
     2.刚刚开发完成大部分功能,bug较多,由于工作原因尚未修复,后期会完善这个webapp的
+    3.项目初始化时playMusic.vue会报错Uncaught (in promise) DOMException,听离线音乐时需要点一下暂停再播放
 
 ### ~~已经上传node_modules依赖包~~,防止依赖包版本升级导致项目运行出错
 

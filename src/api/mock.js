@@ -16,6 +16,7 @@ export const getRecommendMock = {
       'picUrl': 'http://y.gtimg.cn/music/common/upload/MUSIC_FOCUS/1321576.jpg',
       'id': 21298
     }, {
+      'linkUrl': 'http://y.qq.com/w/album.html?albummid=00219N4J2qw1zU',
       'picUrl': 'http://y.gtimg.cn/music/common/upload/MUSIC_FOCUS/1321446.jpg',
       'id': 21310
     }, {
