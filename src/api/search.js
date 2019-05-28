@@ -1,5 +1,6 @@
 import jsonp from 'common/js/jsonp'
 import {commonParams, options} from './config'
+import { getHotKeyMock, isOnLine, mockData } from '../api/mock'
 
 export function getHotKey() {
   const url = 'https://c.y.qq.com/splcloud/fcgi-bin/gethotkey.fcg'
@@ -9,7 +10,9 @@ export function getHotKey() {
     needNewCode: 1,
     platform: 'h5'
   })
-
+  if (!isOnLine) {
+    return mockData(getHotKeyMock)
+  }
   return jsonp(url, data, options)
 }
 

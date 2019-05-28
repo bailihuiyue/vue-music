@@ -13,15 +13,28 @@
         class="play-music"
         v-show="stateShowPlayMusic"
       >
-        <audio
-          ref="audio"
-          id="audio"
-          @canplay="canplay"
-          @ended="ended"
-          @error="error"
-          @timeupdate="timeupdate"
-          :src="stateSongDetail.url"
-        ></audio>
+        <span v-if="!isOnLine">
+          <audio
+            ref="audio"
+            id="audio"
+            @canplay="canplay"
+            @ended="ended"
+            @error="error"
+            @timeupdate="timeupdate"
+            :src="stateSongDetail.url"
+          ></audio>
+        </span>
+        <span v-else>
+          <audio
+            ref="audio"
+            id="audio"
+            @canplay="canplay"
+            @ended="ended"
+            @error="error"
+            @timeupdate="timeupdate"
+            src="../api/song.mp3"
+          ></audio>
+        </span>
         <div class="background">
           <img
             class="background-img"
@@ -46,11 +59,14 @@
             :min-moving-distance="20"
           >
             <swiper-item>
-              <div class="disc-wrap" ref="discWrap">
+              <div
+                class="disc-wrap"
+                ref="discWrap"
+              >
                 <div
                   class="disc rotate"
                   :class="isPaused?'pause-rotate':''"
-                   ref="disc"
+                  ref="disc"
                 >
                   <img :src="stateSongDetail.pic">
                 </div>
@@ -221,7 +237,10 @@
             <i class="icon-clear"></i>
           </div>
         </div>
-        <scroll v-if="isShowSongListMini" style="overflow:hidden">
+        <scroll
+          v-if="isShowSongListMini"
+          style="overflow:hidden"
+        >
           <div class="song-list-min-scroll-wrap">
             <div
               v-for="(l,i) in stateSongList"
@@ -268,7 +287,11 @@
       @onConfirm="onConfirm"
       @onCancel="onCancel"
     ></confirm>
-    <add-song v-show="stateShowAddSong" :isShowAddSong="true" @playSearchedMusic="changeMusicIndex"></add-song>
+    <add-song
+      v-show="stateShowAddSong"
+      :isShowAddSong="true"
+      @playSearchedMusic="changeMusicIndex"
+    ></add-song>
   </div>
 </template>
 
@@ -298,6 +321,7 @@ import musicList from '../components/musicList/musicList'
 import playAll from '../components/play-all/play-all'
 import confirm from '../components/confirm/confirm'
 import addSong from '../components/add-song/add-song'
+import { isOnLine } from '../api/mock'
 
 const transform = prefixStyle('transform')
 
@@ -344,7 +368,8 @@ export default {
       isShowSongListMini: false,
       showConfirm: false,
       confirmText: '',
-      confirmTip: ''
+      confirmTip: '',
+      isOnLine
     }
   },
   methods: {
@@ -388,7 +413,7 @@ export default {
       // this.$refs.body.style.height = footerTop - bodyTop + 'px'
     },
     enter(el, done) {
-      const {x, y, scale} = this._getPosAndScale()
+      const { x, y, scale } = this._getPosAndScale()
 
       let animation = {
         0: {
@@ -418,7 +443,7 @@ export default {
     },
     leave(el, done) {
       this.$refs.discWrap.style.transition = 'all 0.4s'
-      const {x, y, scale} = this._getPosAndScale()
+      const { x, y, scale } = this._getPosAndScale()
       this.$refs.discWrap.style[transform] = `translate3d(${x}px,${y}px,0) scale(${scale})`
       setTimeout(() => {
         done()
@@ -706,9 +731,7 @@ export default {
       'stateSongHistory',
       'stateShowAddSong'
     ]),
-    ...mapGetters([
-      'isMiniPlayShow'
-    ])
+    ...mapGetters(['isMiniPlayShow'])
     // ,
     // /TODO:learn:网上好多人说computed传不了参的,实际上用闭包是可以的
     // hasFavMin() {
@@ -752,228 +775,346 @@ export default {
 }
 </script>
 <style scoped lang="stylus" rel="stylesheet/stylus">
-@import '~common/stylus/variable'
-@import '~common/stylus/mixin'
-.play-music
-  full-page()
-  &.player-enter-active, &.player-leave-active
-    transition all 0.4s
-    .header, .footer
+@import '~common/stylus/variable';
+@import '~common/stylus/mixin';
+
+.play-music {
+  full-page();
+
+  &.player-enter-active, &.player-leave-active {
+    transition: all 0.4s;
+
+    .header, .footer {
       // 贝塞尔曲线,抄的
-      transition all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32)
-  &.player-enter, &.player-leave-to
-    opacity 0
-    .header
-      transform translate3d(0, -100px, 0)
-    .footer
-      transform translate3d(0, 100px, 0)
-  .back
-    position absolute
-    top 10px
-    left 10px
-    transform rotate(-90deg)
-  .background
-    width 100%
-    height 100%
-    opacity 0.6
-    filter blur(20px)
-    position absolute
-    top 0
-    left 0
-    z-index -1
-    .background-img
-      width 100%
-      height 100%
-  .body
-    margin 20px 0
-    .vux-slider
-      height 100%
-      overflow initial
-      /deep/ .vux-icon-dot
-        height 8px
-        width 8px
-        background-color $color-text-l
-      /deep/ .vux-icon-dot.active
-        width 20px
-        border-radius 5px
-        background $color-text-ll
-      /deep/ .vux-indicator
-        bottom -25px
-    .disc
-      width 80%
-      margin 20px auto
-      border-radius 50%
-      overflow hidden
-      border 10px solid rgba(255, 255, 255, 0.15)
-      rotateDisc()
-      img
-        width 100%
-        height 100%
-    .lyric
-      text-align center
-      font-size $font-size-medium
-      color $color-text-l
-      position absolute
-      bottom 0
-      width 100%
-    .full-lyric-wrap
-      .txt
-        line-height 32px
-        color $color-text-l
-        font-size $font-size-medium
-        text-align center
-        &.current
-          color $color-text
-  .footer
-    position absolute
-    bottom 30px
-    width 100%
-    .dot
-      text-align center
-      margin 15px
-    .progress
-      width 80%
-      margin auto
-      .van-row
-        width 100%
-        display flex
-        align-items center
-        .van-slider
-          background-color $scroll-bar-background
-          /deep/ .van-slider__bar
-            background-color $color-theme
-            .van-slider__button
-              border 3px solid $color-text
-              background $color-theme
-              width 12px
-              height 12px
-      .passed-time, .left-time, .music-progress-bar-wrap
-        height $font-size-medium
-        line-height $font-size-medium
-        font-size $font-size-medium
-        width 100%
-      .left-time
-        text-align right
-      .passed-time, .music-progress-bar-wrap
-        text-align left
-    .control-btns
-      width 80%
-      margin 20px auto
-      display flex
-      .icon-wrap
-        text-align center
-        flex 1
-        line-height 35px
-        .i-left, .i-right, .i-middle
-          color $color-theme
-          font-size $icon-font-other
-          vertical-align middle
-        .i-middle
-          font-size $icon-font-middle
-.mini-player
-  width 100%
-  height $miniPlayerHeight
-  position fixed
-  left 0
-  bottom 0
-  background-color $color-highlight-background
-  display flex
-  align-items center
-  justify-content center
-  z-index 3
-  .disc-mini
-    flex 0 0 40px
-    margin 0 10px 0 20px
-    rotateDisc()
-    .img
-      width 100%
-      border-radius 50%
-  .song-info-min
-    display flex
-    flex-direction column
-    justify-content center
-    flex 1
-    line-height 20px
-    overflow hidden
-    .name
-      ellipsis()
-      margin-bottom 2px
-      font-size $font-size-medium
-      color $color-text
-    .singer
-      ellipsis()
-      font-size $font-size-small
-      color $color-text-d
-  .progress-mini
-    flex 0 0 30px
-    margin-right 15px
-    margin-top 4px
-    .iconfont
-      color $color-theme-d
-      font-weight 1000
-  .song-list-btn-mini
-    flex 0 0 30px
-    margin-right 20px
-    .icon-playlist
-      font-size 30px
-      color $color-theme-d
-.vux-popup-bottom
-  background-color $color-highlight-background
-  height 60%
-  display flex
-  flex-direction column
-  .song-list-mini
-    flex 1
-    height 100%
-    width $container-width
-    margin 0 auto
-    display flex
-    flex-direction column
-    .control-mini
-      display flex
-      align-items center
-      justify-content center
-      margin 20px 0 10px 0
-      .icon-play-mini
-        color $color-theme-d
-        font-size $icon-font-other
-        vertical-align middle
-        flex 0 0 40px
-      .state-play-mode-txt
-        color $color-text-l
-        flex 1
-      .icon-clear-mini
-        color $color-text-d
-        flex 0 0 20px
-    .b-scroll
-      flex 1
-      .song-list-min-scroll-wrap
-        .song-list-item
-          display flex
-          align-items center
-          padding-bottom 5px
-          .icon-play, .fav-mini, .icon-delete
-            font-size $font-size-small
-          .icon-play
-            margin-left 2px
-            color $color-theme-d
-          .music-list
-            flex 1
-          .fav-mini, .icon-delete
-            color $color-theme
-            margin-right 5px
-          .fav-mini
-            margin-right 10px
-          /deep/ .text
-            color $color-text-d !important
-            padding-bottom 0
-  .close-song-list-mini
-    flex 0 0 50px
-    width 100%
-    line-height 50px
-    background-color $color-background
-    text-align center
-    display flex
-    justify-content center
-    color $color-text-l
+      transition: all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32);
+    }
+  }
+
+  &.player-enter, &.player-leave-to {
+    opacity: 0;
+
+    .header {
+      transform: translate3d(0, -100px, 0);
+    }
+
+    .footer {
+      transform: translate3d(0, 100px, 0);
+    }
+  }
+
+  .back {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    transform: rotate(-90deg);
+  }
+
+  .background {
+    width: 100%;
+    height: 100%;
+    opacity: 0.6;
+    filter: blur(20px);
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+
+    .background-img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .body {
+    margin: 20px 0;
+
+    .vux-slider {
+      height: 100%;
+      overflow: initial;
+
+      /deep/ .vux-icon-dot {
+        height: 8px;
+        width: 8px;
+        background-color: $color-text-l;
+      }
+
+      /deep/ .vux-icon-dot.active {
+        width: 20px;
+        border-radius: 5px;
+        background: $color-text-ll;
+      }
+
+      /deep/ .vux-indicator {
+        bottom: -25px;
+      }
+    }
+
+    .disc {
+      width: 80%;
+      margin: 20px auto;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 10px solid rgba(255, 255, 255, 0.15);
+      rotateDisc();
+
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    .lyric {
+      text-align: center;
+      font-size: $font-size-medium;
+      color: $color-text-l;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+    }
+
+    .full-lyric-wrap {
+      .txt {
+        line-height: 32px;
+        color: $color-text-l;
+        font-size: $font-size-medium;
+        text-align: center;
+
+        &.current {
+          color: $color-text;
+        }
+      }
+    }
+  }
+
+  .footer {
+    position: absolute;
+    bottom: 30px;
+    width: 100%;
+
+    .dot {
+      text-align: center;
+      margin: 15px;
+    }
+
+    .progress {
+      width: 80%;
+      margin: auto;
+
+      .van-row {
+        width: 100%;
+        display: flex;
+        align-items: center;
+
+        .van-slider {
+          background-color: $scroll-bar-background;
+
+          /deep/ .van-slider__bar {
+            background-color: $color-theme;
+
+            .van-slider__button {
+              border: 3px solid $color-text;
+              background: $color-theme;
+              width: 12px;
+              height: 12px;
+            }
+          }
+        }
+      }
+
+      .passed-time, .left-time, .music-progress-bar-wrap {
+        height: $font-size-medium;
+        line-height: $font-size-medium;
+        font-size: $font-size-medium;
+        width: 100%;
+      }
+
+      .left-time {
+        text-align: right;
+      }
+
+      .passed-time, .music-progress-bar-wrap {
+        text-align: left;
+      }
+    }
+
+    .control-btns {
+      width: 80%;
+      margin: 20px auto;
+      display: flex;
+
+      .icon-wrap {
+        text-align: center;
+        flex: 1;
+        line-height: 35px;
+
+        .i-left, .i-right, .i-middle {
+          color: $color-theme;
+          font-size: $icon-font-other;
+          vertical-align: middle;
+        }
+
+        .i-middle {
+          font-size: $icon-font-middle;
+        }
+      }
+    }
+  }
+}
+
+.mini-player {
+  width: 100%;
+  height: $miniPlayerHeight;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  background-color: $color-highlight-background;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+
+  .disc-mini {
+    flex: 0 0 40px;
+    margin: 0 10px 0 20px;
+    rotateDisc();
+
+    .img {
+      width: 100%;
+      border-radius: 50%;
+    }
+  }
+
+  .song-info-min {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+    line-height: 20px;
+    overflow: hidden;
+
+    .name {
+      ellipsis();
+      margin-bottom: 2px;
+      font-size: $font-size-medium;
+      color: $color-text;
+    }
+
+    .singer {
+      ellipsis();
+      font-size: $font-size-small;
+      color: $color-text-d;
+    }
+  }
+
+  .progress-mini {
+    flex: 0 0 30px;
+    margin-right: 15px;
+    margin-top: 4px;
+
+    .iconfont {
+      color: $color-theme-d;
+      font-weight: 1000;
+    }
+  }
+
+  .song-list-btn-mini {
+    flex: 0 0 30px;
+    margin-right: 20px;
+
+    .icon-playlist {
+      font-size: 30px;
+      color: $color-theme-d;
+    }
+  }
+}
+
+.vux-popup-bottom {
+  background-color: $color-highlight-background;
+  height: 60%;
+  display: flex;
+  flex-direction: column;
+
+  .song-list-mini {
+    flex: 1;
+    height: 100%;
+    width: $container-width;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+
+    .control-mini {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 20px 0 10px 0;
+
+      .icon-play-mini {
+        color: $color-theme-d;
+        font-size: $icon-font-other;
+        vertical-align: middle;
+        flex: 0 0 40px;
+      }
+
+      .state-play-mode-txt {
+        color: $color-text-l;
+        flex: 1;
+      }
+
+      .icon-clear-mini {
+        color: $color-text-d;
+        flex: 0 0 20px;
+      }
+    }
+
+    .b-scroll {
+      flex: 1;
+
+      .song-list-min-scroll-wrap {
+        .song-list-item {
+          display: flex;
+          align-items: center;
+          padding-bottom: 5px;
+
+          .icon-play, .fav-mini, .icon-delete {
+            font-size: $font-size-small;
+          }
+
+          .icon-play {
+            margin-left: 2px;
+            color: $color-theme-d;
+          }
+
+          .music-list {
+            flex: 1;
+          }
+
+          .fav-mini, .icon-delete {
+            color: $color-theme;
+            margin-right: 5px;
+          }
+
+          .fav-mini {
+            margin-right: 10px;
+          }
+
+          /deep/ .text {
+            color: $color-text-d !important;
+            padding-bottom: 0;
+          }
+        }
+      }
+    }
+  }
+
+  .close-song-list-mini {
+    flex: 0 0 50px;
+    width: 100%;
+    line-height: 50px;
+    background-color: $color-background;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    color: $color-text-l;
+  }
+}
 </style>

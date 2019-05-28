@@ -1,7 +1,8 @@
 import jsonp from 'common/js/jsonp'
 import { commonParams, options, key } from './config'
 // import axios from 'axios'
-import {getData} from '../common/js/utils'
+import { getData } from '../common/js/utils'
+import { getRecommendMock, getDiscListMock, getSongListMock, isOnLine, mockData } from '../api/mock'
 export function getRecommend() {
   const url = 'https://c.y.qq.com/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg'
 
@@ -10,7 +11,9 @@ export function getRecommend() {
     uin: 0,
     needNewCode: 1
   })
-
+  if (!isOnLine) {
+    return mockData(getRecommendMock)
+  }
   return jsonp(url, data, options)
 }
 
@@ -23,6 +26,9 @@ export function getDiscList() {
     sortId: '3',
     limit: '60'
   }
+  if (!isOnLine) {
+    return mockData(getDiscListMock)
+  }
   return getData(url, data)
 }
 
@@ -30,5 +36,8 @@ export function getDiscList() {
 export function getSongList(id) {
   const url = 'https://api.bzqll.com/music/tencent/songList'
   const data = { key, id }
+  if (!isOnLine) {
+    return mockData(getSongListMock)
+  }
   return getData(url, data)
 }

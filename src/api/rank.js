@@ -1,7 +1,11 @@
 import jsonp from 'common/js/jsonp'
 import {commonParams, options, key} from './config'
 import {getData} from '../common/js/utils'
+import { getTopListMock, isOnLine, mockData } from '../api/mock'
 export function getTopList() {
+  if (!isOnLine) {
+    return mockData(getTopListMock)
+  }
   return getData('https://api.bzqll.com/music/tencent/hotSongList', {
     key,
     categoryId: '165',
