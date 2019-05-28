@@ -13,29 +13,16 @@
         class="play-music"
         v-show="stateShowPlayMusic"
       >
-        <span v-if="isOnLine">
-          <audio
-            ref="audio"
-            id="audio"
-            @canplay="canplay"
-            @ended="ended"
-            @error="error"
-            @timeupdate="timeupdate"
-            :src="stateSongDetail.url"
-          ></audio>
-        </span>
-        <span v-else>
-          <audio
-            ref="audio"
-            id="audio"
-            @canplay="canplay"
-            @ended="ended"
-            @error="error"
-            @timeupdate="timeupdate"
-            src="/static/song.mp3"
-          ></audio>
-          <!-- TODO:learn:播放本地音乐或者引用本地静态文件的话,放在static里就行了,然后/static/...这样引用就行 -->
-        </span>
+        <audio
+          ref="audio"
+          id="audio"
+          @canplay="canplay"
+          @ended="ended"
+          @error="error"
+          @timeupdate="timeupdate"
+          :src="isOnLine?stateSongDetail.url:'/static/song.mp3'"
+        ></audio>
+        <!-- TODO:learn:播放本地音乐或者引用本地静态文件的话,放在static里就行了,然后/static/...这样引用就行 -->
         <div class="background">
           <img
             class="background-img"
